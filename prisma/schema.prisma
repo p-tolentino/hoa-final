@@ -1,0 +1,112 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ----------------------------------------------------------------
+// --------------------- DATABASE MODELS --------------------------
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+  PENDING
+}
+
+model User {
+  id            String        @id @default(cuid())
+  name          String?
+  email         String?       @unique
+  image         String?
+  emailVerified DateTime?
+  status        Status        @default(PENDING)
+  password      String?
+  role          UserRole      @default(USER)
+  accounts      Account[]
+  info          PersonalInfo?
+  properties    Property[]
+}
+
+model PersonalInfo {
+  id          String    @id @default(cuid())
+  userId      String    @unique
+  firstName   String?
+  middleName  String?
+  lastName    String?
+  phoneNumber String?
+  birthDay    DateTime?
+  vehicles    Vehicle[]
+  type        String?
+  position   String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Vehicle {
+  id       String  @id @unique @default(cuid())
+  infoId   String
+  plateNum String?
+
+  personalInfo PersonalInfo @relation(fields: [infoId], references: [id])
+}
+
+model Property {
+  id           String             @id @unique @default(cuid())
+  userId       String
+  address      String?
+  lotNumber    String?
+  lotSize      String?
+  documents    PropertyDocument[]
+  purchaseDate DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model PropertyDocument {
+  id         String  @id @unique @default(cuid())
+  propertyId String
+  fileName   String?
+  imageUrl   String?
+
+  property Property @relation(fields: [propertyId], references: [id])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model ResetPasswordToken {
+  id      String   @id @default(cuid())
+  email   String
+  token   String   @unique
+  expires DateTime
+
+  @@unique([email, token])
+}
