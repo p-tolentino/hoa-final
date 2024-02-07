@@ -127,31 +127,37 @@ export const Navbar = () => {
       <Show above="md">
         <Spacer />
         <HStack gap="10">
-          {navRoutes.map((route) => (
-            <Link
-              key={route.href}
-              href={route.href}
-              className={cn(
-                "flex justify-between transition-colors",
-                route.active
-                  ? "text-[#F0CB5B]"
-                  : "text-white hover:text-[#F0CB5B]"
-              )}
-              style={{ textDecoration: "none" }}
-            >
-              <Button
-                variant="link"
-                className={cn(
-                  "justify-start w-full",
-                  route.active
-                    ? "text-[#F0CB5B]"
-                    : "text-white hover:text-[#F0CB5B]"
-                )}
-              >
-                {route.label}
-              </Button>
-            </Link>
-          ))}
+          {navRoutes.map((route) => {
+            if (!user && route.label === "Dashboard") {
+              return null;
+            } else {
+              return (
+                <Link
+                  key={route.href}
+                  href={route.href}
+                  className={cn(
+                    "flex justify-between transition-colors",
+                    route.active
+                      ? "text-[#F0CB5B]"
+                      : "text-white hover:text-[#F0CB5B]"
+                  )}
+                  style={{ textDecoration: "none" }}
+                >
+                  <Button
+                    variant="link"
+                    className={cn(
+                      "justify-start w-full",
+                      route.active
+                        ? "text-[#F0CB5B]"
+                        : "text-white hover:text-[#F0CB5B]"
+                    )}
+                  >
+                    {route.label}
+                  </Button>
+                </Link>
+              );
+            }
+          })}
         </HStack>
       </Show>
       <Spacer />
