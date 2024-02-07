@@ -90,14 +90,17 @@ export const Navbar = () => {
         </Box>
       </Flex>
       <Show breakpoint="(max-width: 767px)">
+        <Spacer />
         <Menu>
           <MenuButton
             as={IconButton}
             aria-label="Options"
             icon={<HamburgerIcon />}
-            ml="200px"
             variant="outline"
             color="brand.300"
+            position="absolute"
+            right="0"
+            mr="30px"
           />
           <MenuList color="black">
             {navRoutes.map((route) => {
