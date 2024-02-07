@@ -95,11 +95,15 @@ export const Navbar = () => {
             color="brand.300"
           />
           <MenuList color="black">
-            {navRoutes.map((route) => (
-              <Link key={route.href} href={route.href}>
-                <MenuItem>{route.label}</MenuItem>
-              </Link>
-            ))}
+            {navRoutes.map((route) => {
+              if (!user && route.label === "Dashboard") {
+                return null;
+              } else {
+                <Link key={route.href} href={route.href}>
+                  <MenuItem>{route.label}</MenuItem>
+                </Link>;
+              }
+            })}
             <Divider />
             {!user ? (
               <MenuItem as="a" rel="noopener" href="login">
