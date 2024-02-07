@@ -38,26 +38,31 @@ export const Navbar = () => {
       label: "About",
       href: "/#about",
       active: pathname === `/#about`,
+      requireAuth: false,
     },
     {
       label: "Register HOA",
       href: "/#registerHOA",
       active: pathname === `/#registerHOA`,
+      requireAuth: false,
     },
     {
       label: "Terms and Conditions",
       href: "",
       active: pathname === ``,
+      requireAuth: false,
     },
     {
       label: "Contact Us",
       href: "/#contactUs",
       active: pathname === `/#contactUs`,
+      requireAuth: false,
     },
     {
       label: "Dashboard",
       href: user?.role === UserRole.ADMIN ? "/admin" : "/user",
       active: pathname === `/admin` || pathname === `/user`,
+      requireAuth: true,
     },
   ];
 
@@ -96,19 +101,21 @@ export const Navbar = () => {
           />
           <MenuList color="black">
             {navRoutes.map((route) => {
-              if (!user && route.label === "Dashboard") {
+              if (!user && route.requireAuth) {
                 return null;
               } else {
-                <Link key={route.href} href={route.href}>
-                  <MenuItem>{route.label}</MenuItem>
-                </Link>;
+                return (
+                  <Link key={route.href} href={route.href}>
+                    <MenuItem>{route.label}</MenuItem>
+                  </Link>
+                );
               }
             })}
             <Divider />
             {!user ? (
-              <MenuItem as="a" rel="noopener" href="login">
-                Sign in
-              </MenuItem>
+              <Link href="/login">
+                <MenuItem>Sign in</MenuItem>
+              </Link>
             ) : (
               <>
                 <Link
@@ -132,7 +139,7 @@ export const Navbar = () => {
         <Spacer />
         <HStack gap="10">
           {navRoutes.map((route) => {
-            if (!user && route.label === "Dashboard") {
+            if (!user && route.requireAuth) {
               return null;
             } else {
               return (
