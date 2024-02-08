@@ -31,10 +31,11 @@ model User {
   email         String?       @unique
   image         String?
   emailVerified DateTime?
-  status        Status        @default(PENDING)
   password      String?
-  role          UserRole      @default(USER)
   accounts      Account[]
+
+  role          UserRole      @default(USER)
+  status        Status        @default(PENDING)
   info          PersonalInfo?
   properties    Property[]
 }
@@ -47,9 +48,16 @@ model PersonalInfo {
   lastName    String?
   phoneNumber String?
   birthDay    DateTime?
-  vehicles    Vehicle[]
+
+  address     String?
+
+  bio         String?
+
   type        String?
-  position   String?
+  position    String?   @default("Member")
+
+  vehicles    Vehicle[]
+
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
@@ -59,7 +67,7 @@ model Vehicle {
   infoId   String
   plateNum String?
 
-  personalInfo PersonalInfo @relation(fields: [infoId], references: [id])
+  personalInfo PersonalInfo @relation(fields: [infoId], references: [id], onDelete: Cascade)
 }
 
 model Property {
@@ -80,7 +88,7 @@ model PropertyDocument {
   fileName   String?
   imageUrl   String?
 
-  property Property @relation(fields: [propertyId], references: [id])
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 }
 
 model Account {

@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import authConfig from "@/auth.config";
 import { getUserById } from "@/server/data/user";
 import { getAccountByUserId } from "./server/data/account";
+import { getInfoById } from "./server/data/userInfo";
 
 export const {
   handlers: { GET, POST },
@@ -47,6 +48,8 @@ export const {
       if (session.user) {
         session.user.name = token.name;
         session.user.email = token.email;
+        session.user.role = token.role;
+        session.user.info = token.info;
       }
 
       return session;
@@ -62,10 +65,13 @@ export const {
 
       const existingAccount = await getAccountByUserId(existingUser.id);
 
+      const existingInfo = await getInfoById(existingUser.id);
+
       token.isOAuth = !!existingAccount;
       token.name = existingUser.name;
       token.email = existingUser.email;
       token.role = existingUser.role;
+      token.info = existingInfo;
 
       return token;
     },

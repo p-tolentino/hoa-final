@@ -1,5 +1,5 @@
-const AdminSettings = async () => {
+const Settings = async () => {
   return <div>Settings:</div>;
 };
 
-export default AdminSettings;
+export default Settings;

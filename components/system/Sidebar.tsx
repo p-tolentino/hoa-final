@@ -2,6 +2,14 @@
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+
 import {
   FiBriefcase,
   FiCalendar,
@@ -10,219 +18,142 @@ import {
   FiUsers,
 } from "react-icons/fi";
 import Link from "next/link";
-import { useParams, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { PiBinocularsBold, PiBroomFill } from "react-icons/pi";
 import { TfiDashboard as Dashboard } from "react-icons/tfi";
 import { FaUser as User } from "react-icons/fa";
 import { RxGear as Gear, RxExit as Exit } from "react-icons/rx";
 import { BsNewspaper } from "react-icons/bs";
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { UserRole } from "@prisma/client";
 import { Separator } from "../ui/separator";
 import { LogoutButton } from "../auth/logout-button";
-import { getInfoById } from "@/server/data/userInfo";
 
 export function Sidebar() {
   const user = useCurrentUser();
-  var existingInfo;
-
-  if (user) {
-    existingInfo = getInfoById(user?.id);
-  }
-
-  console.log(existingInfo);
-
   const pathname = usePathname();
-  const params = useParams();
 
-  const userRoutes = [
+  const sidebarRoutes = [
     {
       label: "Dashboard",
-      href: "/user",
+      href: `/${user?.role.toLowerCase()}`,
       icon: <Dashboard className="w-5 h-5 mr-2" />,
-      active: pathname === `/user`,
+      active: pathname === `/${user?.role.toLowerCase()}`,
     },
     {
       label: "Membership",
-      href: "/user/membership",
+      href: `/${user?.role.toLowerCase()}/membership`,
       icon: <FiUserCheck className="w-5 h-5 mr-2" />,
-      active: pathname === `/user/membership"`,
+      active: pathname === `/${user?.role.toLowerCase()}/membership"`,
     },
     {
       label: "Finance Management",
-      href: "/user/finance",
+      href: `/${user?.role.toLowerCase()}/finance`,
       icon: <FiDollarSign className="w-5 h-5 mr-2" />,
-      active: pathname === `/user/finance`,
+      active: pathname === `/${user?.role.toLowerCase()}/finance`,
     },
     {
       label: "Community Engagement",
-      href: "/user/community",
+      href: `/${user?.role.toLowerCase()}/community`,
       icon: <FiUsers className="w-5 h-5 mr-2" />,
-      active: pathname === `/user/community`,
+      active: pathname === `/${user?.role.toLowerCase()}/community`,
     },
     {
       label: "Dispute Resolution",
-      href: "/user/dispute",
+      href: `/${user?.role.toLowerCase()}/disputes`,
       icon: <FiBriefcase className="w-5 h-5 mr-2" />,
-      active: pathname === `/user/dispute`,
+      active: pathname === `/${user?.role.toLowerCase()}/disputes`,
     },
     {
       label: "Violation Monitoring",
-      href: "/user/violation",
+      href: `/${user?.role.toLowerCase()}/violations`,
       icon: <PiBinocularsBold className="w-5 h-5 mr-2" />,
-      active: pathname === `/user/violation"`,
+      active: pathname === `/${user?.role.toLowerCase()}/violations`,
     },
     {
       label: "Facility Reservation",
-      href: "/user/facility",
+      href: `/${user?.role.toLowerCase()}/facility`,
       icon: <FiCalendar className="w-5 h-5 mr-2" />,
-      active: pathname === `/user/facility`,
+      active: pathname === `/${user?.role.toLowerCase()}/facility`,
     },
     {
       label: "Maintenance Handling",
-      href: "/user/maintenance",
+      href: `/${user?.role.toLowerCase()}/maintenance`,
       icon: <PiBroomFill className="w-5 h-5 mr-2" />,
-      active: pathname === `/user/maintenance`,
+      active: pathname === `/${user?.role.toLowerCase()}/maintenance`,
     },
     {
       label: "Election Management",
-      href: "/user/election",
+      href: `/${user?.role.toLowerCase()}/election`,
       icon: <BsNewspaper className="w-5 h-5 mr-2" />,
-      active: pathname === `/user/election`,
+      active: pathname === `/${user?.role.toLowerCase()}/election`,
     },
   ];
 
-  const adminRoutes = [
-    {
-      label: "Dashboard",
-      href: "/admin",
-      icon: <Dashboard className="w-5 h-5 mr-2" />,
-      active: pathname === `/admin`,
-    },
-    {
-      label: "Membership",
-      href: "/admin/membership",
-      icon: <FiUserCheck className="w-5 h-5 mr-2" />,
-      active: pathname === `/admin/membership"`,
-    },
-    {
-      label: "Finance Management",
-      href: "/admin/finance",
-      icon: <FiDollarSign className="w-5 h-5 mr-2" />,
-      active: pathname === `/admin/finance`,
-    },
-    {
-      label: "Community Engagement",
-      href: "/admin/community",
-      icon: <FiUsers className="w-5 h-5 mr-2" />,
-      active: pathname === `/admin/community`,
-    },
-    {
-      label: "Dispute Resolution",
-      href: "/admin/dispute",
-      icon: <FiBriefcase className="w-5 h-5 mr-2" />,
-      active: pathname === `/admin/dispute`,
-    },
-    {
-      label: "Violation Monitoring",
-      href: "/admin/violation",
-      icon: <PiBinocularsBold className="w-5 h-5 mr-2" />,
-      active: pathname === `/admin/violation"`,
-    },
-    {
-      label: "Facility Reservation",
-      href: "/admin/facility",
-      icon: <FiCalendar className="w-5 h-5 mr-2" />,
-      active: pathname === `/admin/facility`,
-    },
-    {
-      label: "Maintenance Handling",
-      href: "/admin/maintenance",
-      icon: <PiBroomFill className="w-5 h-5 mr-2" />,
-      active: pathname === `/admin/maintenance`,
-    },
-    {
-      label: "Election Management",
-      href: "/admin/election",
-      icon: <BsNewspaper className="w-5 h-5 mr-2" />,
-      active: pathname === `/admin/election`,
-    },
-  ];
+  const membershipRoutes = [];
+
+  const financeRoutes = [];
+
+  const communityRoutes = [];
+
+  const disputeRoutes = [];
+
+  const violationRoutes = [];
+
+  const facilityRoutes = [];
+
+  const maintenanceRoutes = [];
+
+  const electionRoutes = [];
 
   const profileRoutes = [
     {
       label: "My Profile",
-      href: user?.role === UserRole.ADMIN ? "/admin/profile" : "/user/profile",
+      href: `/${user?.role.toLowerCase()}/profile`,
       icon: <User className="w-5 h-5 mr-2" />,
-      active: pathname === `/admin/profile` || pathname === `/user/profile`,
+      active: pathname === `/${user?.role.toLowerCase()}/profile`,
     },
     {
       label: "Settings",
-      href:
-        user?.role === UserRole.ADMIN ? "/admin/settings" : "/user/settings",
+      href: `/${user?.role.toLowerCase()}/settings`,
       icon: <Gear className="w-5 h-5 mr-2" />,
-      active: pathname === `/admin/settings` || pathname === `/user/settings`,
+      active: pathname === `/${user?.role.toLowerCase()}/settings`,
     },
   ];
 
   return (
     <div
       className={cn(
-        "h-[100vh]  bg-[#355E3B] flex items-start space-x-4 lg:space-x-6 text-white"
+        "h-full  bg-[#355E3B] flex items-start space-x-4 lg:space-x-6 text-white"
       )}
     >
       <div className="py-4 space-y-4">
         <div className="px-3 py-2">
-          <h2 className="px-4 mb-2 text-lg font-semibold tracking-tight ">
+          <h1 className="px-4 mb-2 text-lg font-semibold tracking-tight ">
             Modules
-          </h2>
+          </h1>
           <div className="space-y-4">
-            {user?.role === UserRole.USER &&
-              userRoutes.map((route) => (
-                <Link
-                  key={route.href}
-                  href={route.href}
+            {sidebarRoutes.map((route) => (
+              <Link
+                key={route.href}
+                href={route.href}
+                className={cn(
+                  "flex justify-between font-medium transition-colors hover:text-primary",
+                  route.active ? "text-black" : "text-white"
+                )}
+              >
+                <Button
                   className={cn(
-                    "flex justify-between font-medium transition-colors hover:text-primary",
-                    route.active ? "text-black" : "text-white"
+                    "justify-start w-full",
+                    route.active
+                      ? "bg-[#F0CB5B] text-black hover:bg-[#F0CB5B]"
+                      : "bg-[#355E3B] hover:bg-[#688f6e]"
                   )}
                 >
-                  <Button
-                    className={cn(
-                      "justify-start w-full",
-                      route.active
-                        ? "bg-[#F0CB5B] text-black hover:bg-[#F0CB5B]"
-                        : "bg-[#355E3B] hover:bg-[#688f6e]"
-                    )}
-                  >
-                    {route.icon}
-                    {route.label}
-                  </Button>
-                </Link>
-              ))}
-            {user?.role === UserRole.ADMIN &&
-              adminRoutes.map((route) => (
-                <Link
-                  key={route.href}
-                  href={route.href}
-                  className={cn(
-                    "flex justify-between font-medium transition-colors hover:text-primary",
-                    route.active ? "text-black" : "text-white"
-                  )}
-                >
-                  <Button
-                    className={cn(
-                      "justify-start w-full",
-                      route.active
-                        ? "bg-[#F0CB5B] text-black hover:bg-[#F0CB5B]"
-                        : "bg-[#355E3B] hover:bg-[#688f6e]"
-                    )}
-                  >
-                    {route.icon}
-                    {route.label}
-                  </Button>
-                </Link>
-              ))}
+                  {route.icon}
+                  {route.label}
+                </Button>
+              </Link>
+            ))}
           </div>
         </div>
 

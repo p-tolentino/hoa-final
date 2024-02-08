@@ -18,7 +18,6 @@ import { FaUser as User } from "react-icons/fa";
 import { RxExit as Exit } from "react-icons/rx";
 import { RxDashboard as Dashboard, RxGear as Gear } from "react-icons/rx";
 import Link from "next/link";
-import { UserRole } from "@prisma/client";
 
 export const UserButton = () => {
   const user = useCurrentUser();
@@ -28,28 +27,22 @@ export const UserButton = () => {
       <DropdownMenuTrigger>
         <Avatar>
           <AvatarImage src={user?.image || ""} />
-          <AvatarFallback className="text-white bg-sky-500">
+          <AvatarFallback className="text-white bg-yellow-600">
             <User className="" />
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-40" align="end">
+      <DropdownMenuContent className="w-full" align="end">
         <DropdownMenuLabel>{user?.email}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <Link href={user?.role === UserRole.ADMIN ? "/admin" : "/user"}>
+          <Link href={`/${user?.role.toLowerCase()}`}>
             <DropdownMenuItem>
               <Dashboard className="w-4 h-4 mr-2" />
               Dashboard
             </DropdownMenuItem>
           </Link>
-          <Link
-            href={
-              user?.role === UserRole.ADMIN
-                ? "/admin/settings"
-                : "/user/settings"
-            }
-          >
+          <Link href={`/${user?.role.toLowerCase()}/settings`}>
             <DropdownMenuItem>
               <Gear className="w-4 h-4 mr-2" />
               Settings

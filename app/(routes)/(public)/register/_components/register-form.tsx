@@ -27,6 +27,7 @@ import { register } from "@/server/actions/register";
 
 import { Flex, Box, Stack, Heading, Text } from "@chakra-ui/react";
 import { Social } from "@/components/auth/social";
+import { Separator } from "@/components/ui/separator";
 
 export const RegisterForm = () => {
   const [error, setError] = useState<string | undefined>("");
@@ -163,8 +164,14 @@ export const RegisterForm = () => {
               </Button>
             </form>
           </Form>
-          <Flex justify="center" alignItems="center" className="p-2 text-sm">
-            or
+          <Flex
+            justify="center"
+            alignItems="center"
+            className="gap-1 p-2 my-2 text-sm"
+          >
+            <Separator className="w-[50%]" />
+            <span className="text-gray-400">or</span>
+            <Separator className="w-[50%]" />
           </Flex>
           <Social />
           <Flex justify="center" alignItems="center">

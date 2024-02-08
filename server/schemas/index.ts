@@ -1,5 +1,8 @@
-import { UserRole } from "@prisma/client";
 import * as z from "zod";
+
+const phoneRegex = new RegExp(
+  /^([+]?[\s0-9]+)?(\d{3}|[(]?[0-9]+[)])?([-]?[\s]?[0-9])+$/
+);
 
 export const ResetSchema = z.object({
   email: z.string().email({
@@ -30,16 +33,33 @@ export const RegisterSchema = z.object({
   }),
 });
 
+export const PersonalInfoSchema = z.object({
+  firstName: z.string(),
+  middleName: z.string(),
+  lastName: z.string(),
+  bio: z.optional(z.string()),
+  birthDay: z.string(),
+  phoneNumber: z
+    .string()
+    .min(11, {
+      message: "Phone number required",
+    })
+    .max(11, {
+      message: "Invalid phone number",
+    })
+    .regex(phoneRegex, "Invalid phone number."),
+  type: z.enum(["Homeowner", "Tenant"], {
+    required_error: "Please specify if you are a homeowner or a tenant.",
+  }),
+  address: z.string({
+    required_error: "Please choose your home address.",
+  }),
+});
+
+export const VehicleSchema = z.object({ plateNum: z.string() });
+
 export const SettingsSchema = z
   .object({
-    name: z.optional(z.string()),
-    isTwoFactorEnabled: z.optional(z.boolean()),
-    role: z.enum([UserRole.ADMIN, UserRole.USER]),
-    email: z.optional(
-      z.string().email({
-        message: "Valid email is required",
-      })
-    ),
     password: z.optional(
       z.string().min(6, {
         message: "Minimum of 6 characters required",

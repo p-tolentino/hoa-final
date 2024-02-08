@@ -20,6 +20,9 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
   const existingUser = await getUserByEmail(email);
 
   if (existingUser) {
+    if (existingUser.emailVerified) {
+      return { error: "Email already in use! Try signing in with Google." };
+    }
     return { error: "Email already in use!" };
   }
 

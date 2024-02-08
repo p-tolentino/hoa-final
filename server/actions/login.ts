@@ -3,11 +3,10 @@
 import * as z from "zod";
 import { signIn } from "@/auth";
 import { LoginSchema } from "@/server/schemas";
-import { DEFAULT_LOGIN_REDIRECT, DEFAULT_FIRST_LOGIN_REDIRECT } from "@/routes";
+import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 
 import { AuthError } from "next-auth";
 import { getUserByEmail } from "@/server/data/user";
-import { getInfoById } from "@/server/data/userInfo";
 
 export const login = async (
   values: z.infer<typeof LoginSchema>,
@@ -24,12 +23,26 @@ export const login = async (
   const existingUser = await getUserByEmail(email);
 
   if (!existingUser || !existingUser.email || !existingUser.password) {
-    return { error: "Email does not exist!" };
-  }
+    if (existingUser && !existingUser?.password) {
+      // try {
+      //   await signIn("google", {
+      //     callbackUrl: callbackUrl || DEFAULT_LOGIN_REDIRECT,
+      //   });
+      // } catch (error) {
+      //   if (error instanceof AuthError) {
+      //     switch (error.type) {
+      //       case "CredentialsSignin":
+      //         return { error: "Invalid credentials!" };
+      //       default:
+      //         return { error: "Something went wrong." };
+      //     }
+      //   }
 
-  const existingInfo = await getInfoById(existingUser.id);
-  if (!existingInfo) {
-    callbackUrl = DEFAULT_FIRST_LOGIN_REDIRECT;
+      //   throw error;
+      // }
+      return { error: "Sign in with Google using this email." };
+    }
+    return { error: "Email does not exist!" };
   }
 
   try {

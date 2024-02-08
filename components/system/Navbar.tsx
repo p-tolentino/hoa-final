@@ -3,7 +3,6 @@
 import { cn } from "@/lib/utils";
 import { MdComputer as Logo } from "react-icons/md";
 import {
-  Link,
   Box,
   Flex,
   HStack,
@@ -18,20 +17,20 @@ import {
   MenuItem,
   Divider,
 } from "@chakra-ui/react";
-import SignInButton from "./SignInButton";
 import { HamburgerIcon } from "@chakra-ui/icons";
-import { useCurrentUser } from "@/hooks/use-current-user";
-import { UserButton } from "../auth/user-button";
-import { UserRole } from "@prisma/client";
-import { useParams, usePathname } from "next/navigation";
-import { LogoutButton } from "../auth/logout-button";
+import SignInButton from "./SignInButton";
+
 import { Button } from "../ui/button";
+import { UserButton } from "../auth/user-button";
+import { LogoutButton } from "../auth/logout-button";
+import Link from "next/link";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import { usePathname } from "next/navigation";
 
 export const Navbar = () => {
   const user = useCurrentUser();
 
   const pathname = usePathname();
-  const params = useParams();
 
   const navRoutes = [
     {
@@ -48,8 +47,8 @@ export const Navbar = () => {
     },
     {
       label: "Terms and Conditions",
-      href: "",
-      active: pathname === ``,
+      href: "/#policies",
+      active: pathname === `/#policies`,
       requireAuth: false,
     },
     {
@@ -60,8 +59,8 @@ export const Navbar = () => {
     },
     {
       label: "Dashboard",
-      href: user?.role === UserRole.ADMIN ? "/admin" : "/user",
-      active: pathname === `/admin` || pathname === `/user`,
+      href: `/${user?.role.toLowerCase()}`,
+      active: pathname === `/${user?.role.toLowerCase()}`,
       requireAuth: true,
     },
   ];
@@ -77,18 +76,18 @@ export const Navbar = () => {
       top="0"
       direction="row"
     >
-      <Flex>
-        <Heading ml="10px" color="white" size={{ base: "xl", md: "xl" }}>
-          <Logo />
-        </Heading>
-        <Box ml="20px">
-          <Heading paddingTop="5px" fontSize={{ base: "9px", md: "md" }}>
-            <Text as="a" rel="noopener" href="/" fontFamily="font.heading">
-              System Name
-            </Text>
+      <Link href="/">
+        <Flex>
+          <Heading ml="10px" color="white" size={{ base: "xl", md: "xl" }}>
+            <Logo />
           </Heading>
-        </Box>
-      </Flex>
+          <Box ml="20px">
+            <Heading paddingTop="5px" fontSize={{ base: "9px", md: "md" }}>
+              <Text fontFamily="font.heading">System Name</Text>
+            </Heading>
+          </Box>
+        </Flex>
+      </Link>
       <Show breakpoint="(max-width: 767px)">
         <Spacer />
         <Menu>
@@ -121,13 +120,7 @@ export const Navbar = () => {
               </Link>
             ) : (
               <>
-                <Link
-                  href={
-                    user?.role === UserRole.ADMIN
-                      ? "/admin/settings"
-                      : "/user/settings"
-                  }
-                >
+                <Link href={`/${user?.role.toLowerCase()}/settings`}>
                   <MenuItem>Settings</MenuItem>
                 </Link>
                 <LogoutButton>

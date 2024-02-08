@@ -10,7 +10,7 @@ import Link from "next/link";
 
 import { FaUserShield as Admin } from "react-icons/fa";
 
-const AdminPage = async ({ children }: { children: React.ReactNode }) => {
+const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
   const role = await currentRole();
 
   return role === UserRole.USER ? (
@@ -44,4 +44,4 @@ const AdminPage = async ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export default AdminPage;
+export default AdminLayout;
