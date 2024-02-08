@@ -4,7 +4,6 @@ import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTransition } from "react";
-import { revalidatePath } from "next/cache";
 
 import { Heading } from "@/components/ui/heading";
 import { Button } from "@/components/ui/button";
@@ -33,14 +32,20 @@ import {
 } from "@/components/ui/select";
 import { useRouter } from "next/navigation";
 import { ExtendedUser } from "@/next-auth";
+import { Property } from "@prisma/client";
+import { updatePropertyOwner } from "@/server/actions/property";
 
 interface SettingsFormProps {
   initialData: ExtendedUser;
+  properties: Property[];
 }
 
 type SettingsFormValues = z.infer<typeof PersonalInfoSchema>;
 
-export const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
+export const SettingsForm: React.FC<SettingsFormProps> = ({
+  initialData,
+  properties,
+}) => {
   const router = useRouter();
   const { update } = useSession();
   const [isPending, startTransition] = useTransition();
@@ -48,15 +53,15 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(PersonalInfoSchema),
     defaultValues: {
-      firstName: initialData?.info.firstName,
-      middleName: initialData?.info.middleName,
-      lastName: initialData?.info.lastName,
-      birthDay: new Date(initialData?.info.birthDay)
-        .toISOString()
-        .split("T")[0],
-      phoneNumber: initialData?.info.phoneNumber,
-      type: initialData?.info.type,
-      address: initialData?.info.address,
+      firstName: initialData?.info?.firstName || undefined,
+      middleName: initialData?.info?.middleName || undefined,
+      lastName: initialData?.info?.lastName || undefined,
+      birthDay: initialData?.info?.birthDay
+        ? new Date(initialData?.info?.birthDay)?.toISOString().split("T")[0]
+        : undefined,
+      phoneNumber: initialData?.info?.phoneNumber || "",
+      type: initialData?.info?.type || undefined,
+      address: initialData?.info?.address || undefined,
     },
   });
 
@@ -69,8 +74,25 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
           }
 
           if (data.success) {
-            update();
             console.log(data.success);
+
+            updatePropertyOwner(values.address, initialData?.id)
+              .then((data) => {
+                if (data.error) {
+                  console.log(data.error);
+                }
+
+                if (data.success) {
+                  updatePropertyOwner(values.address, initialData?.id);
+                  update();
+                  form.reset();
+                  router.refresh();
+                  console.log(data.success);
+                }
+              })
+              .catch(() => {
+                console.log("Something went wrong.");
+              });
           }
         })
         .catch(() => {
@@ -235,10 +257,18 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {/* // TODO: Fetch Properties that Admin made from DB */}
-                      <SelectItem value="Address 1">Address 1</SelectItem>
-                      <SelectItem value="Address 2">Address 2</SelectItem>
-                      <SelectItem value="Address 3">Address 3</SelectItem>
+                      {properties.map((property) => {
+                        if (
+                          property.userId === initialData.id ||
+                          !property.userId
+                        ) {
+                          return (
+                            <SelectItem key={property.id} value={property.id}>
+                              {property.address}
+                            </SelectItem>
+                          );
+                        }
+                      })}
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -248,7 +278,7 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
           </div>
           <Button
             disabled={isPending}
-            className="mr-auto text-black bg-yellow-400 end hover:bg-yellow-500 focus:bg-yellow-600"
+            className="text-black bg-yellow-400 end hover:bg-yellow-500 focus:bg-yellow-600"
             type="submit"
           >
             Save changes

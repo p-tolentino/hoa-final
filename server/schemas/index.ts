@@ -42,7 +42,7 @@ export const PersonalInfoSchema = z.object({
   phoneNumber: z
     .string()
     .min(11, {
-      message: "Phone number required",
+      message: "Contact number required",
     })
     .max(11, {
       message: "Invalid phone number",
@@ -57,6 +57,21 @@ export const PersonalInfoSchema = z.object({
 });
 
 export const VehicleSchema = z.object({ plateNum: z.string() });
+
+export const PropertySchema = z.object({
+  address: z.string().min(1, {
+    message: "Complete address required",
+  }),
+  lotNumber: z.string().min(1, {
+    message: "Lot number required",
+  }),
+  lotSize: z.string().min(1, {
+    message: "Lot size in square meters required",
+  }),
+  purchaseDate: z.string({
+    required_error: "Please specify when the property was bought.",
+  }),
+});
 
 export const SettingsSchema = z
   .object({

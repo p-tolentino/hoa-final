@@ -14,3 +14,18 @@ export const getInfoById = async (id: string) => {
     return null;
   }
 };
+
+export const getPropertyById = async (id: string) => {
+  try {
+    const properties = await db.property.findMany({
+      where: { userId: id },
+      include: {
+        documents: true,
+      },
+    });
+
+    return properties;
+  } catch {
+    return null;
+  }
+};

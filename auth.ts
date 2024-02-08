@@ -5,7 +5,7 @@ import { db } from "@/lib/db";
 import authConfig from "@/auth.config";
 import { getUserById } from "@/server/data/user";
 import { getAccountByUserId } from "./server/data/account";
-import { getInfoById } from "./server/data/userInfo";
+import { getInfoById } from "./server/data/user-info";
 
 export const {
   handlers: { GET, POST },

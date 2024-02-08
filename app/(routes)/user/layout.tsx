@@ -23,8 +23,8 @@ const UserLayout = ({ children }: { children: React.ReactNode }) => {
   ) : (
     <Flex>
       <Sidebar />
-      <Flex flexDir={"column"} w="100%">
-        <div className="flex min-h-full p-10">{children}</div>
+      <Flex flexDir={"column"} w="100%" className="p-10">
+        {children}
       </Flex>
     </Flex>
   );

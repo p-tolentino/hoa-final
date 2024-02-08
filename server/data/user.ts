@@ -6,7 +6,6 @@ export const getUserByEmail = async (email: string) => {
       where: { email },
       include: {
         info: true,
-        properties: true,
       },
     });
 
@@ -22,7 +21,6 @@ export const getUserById = async (id: string) => {
       where: { id },
       include: {
         info: true,
-        properties: true,
       },
     });
 

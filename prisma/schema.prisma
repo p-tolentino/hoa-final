@@ -37,7 +37,6 @@ model User {
   role          UserRole      @default(USER)
   status        Status        @default(PENDING)
   info          PersonalInfo?
-  properties    Property[]
 }
 
 model PersonalInfo {
@@ -71,15 +70,13 @@ model Vehicle {
 }
 
 model Property {
-  id           String             @id @unique @default(cuid())
-  userId       String
+  id           String        @id @unique @default(cuid())
+  userId       String?       
   address      String?
   lotNumber    String?
   lotSize      String?
   documents    PropertyDocument[]
   purchaseDate DateTime?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model PropertyDocument {

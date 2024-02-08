@@ -123,7 +123,7 @@ export function Sidebar() {
   return (
     <div
       className={cn(
-        "h-full  bg-[#355E3B] flex items-start space-x-4 lg:space-x-6 text-white"
+        "h-full  bg-[#54865c] flex items-start space-x-4 lg:space-x-6 text-white"
       )}
     >
       <div className="py-4 space-y-4">
@@ -143,10 +143,10 @@ export function Sidebar() {
               >
                 <Button
                   className={cn(
-                    "justify-start w-full",
+                    "justify-start w-full mr-2",
                     route.active
                       ? "bg-[#F0CB5B] text-black hover:bg-[#F0CB5B]"
-                      : "bg-[#355E3B] hover:bg-[#688f6e]"
+                      : "bg-[#54865c] hover:bg-[#93ca9b] hover:text-black"
                   )}
                 >
                   {route.icon}
@@ -176,7 +176,7 @@ export function Sidebar() {
                     "justify-start w-full",
                     route.active
                       ? "bg-[#F0CB5B] text-black hover:bg-[#F0CB5B]"
-                      : "bg-[#355E3B] hover:bg-[#688f6e]"
+                      : "bg-[#54865c] hover:bg-[#93ca9b] hover:text-black"
                   )}
                 >
                   {route.icon}
@@ -188,7 +188,7 @@ export function Sidebar() {
           <Separator className="my-4 opacity-50" />
           <LogoutButton>
             <Button
-              className=" justify-start w-full bg-[#355E3B] hover:bg-[#688f6e] hover:text-white"
+              className=" justify-start w-full bg-[#54865c] hover:bg-[#93ca9b] hover:text-black"
               variant="ghost"
             >
               <Exit className="w-4 h-4 mr-2" />
