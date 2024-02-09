@@ -22,6 +22,8 @@ const Properties = async () => {
     address: item.address || "",
     lotNumber: item.lotNumber || "",
     lotSize: item.lotSize || "",
+    userId: item.userId || "",
+    occupantName: item.occupantName || "-",
     purchaseDate: item.purchaseDate
       ? format(
           new Date(item.purchaseDate)?.toISOString().split("T")[0],

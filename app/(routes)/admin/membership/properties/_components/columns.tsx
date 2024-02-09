@@ -8,6 +8,7 @@ export type PropertyColumn = {
   address: string;
   lotNumber: string;
   lotSize: string;
+  userId: string;
   purchaseDate: string;
 };
 
@@ -23,6 +24,10 @@ export const columns: ColumnDef<PropertyColumn>[] = [
   {
     accessorKey: "lotSize",
     header: "Lot Size (sq. m.)",
+  },
+  {
+    accessorKey: "occupantName",
+    header: "Occupant",
   },
   {
     accessorKey: "purchaseDate",

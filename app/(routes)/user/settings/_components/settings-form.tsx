@@ -76,17 +76,18 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({
           if (data.success) {
             console.log(data.success);
 
-            updatePropertyOwner(values.address, initialData?.id)
+            const occupant = values.firstName + " " + values.lastName;
+
+            updatePropertyOwner(values.address, initialData?.id, occupant)
               .then((data) => {
                 if (data.error) {
                   console.log(data.error);
                 }
 
                 if (data.success) {
-                  updatePropertyOwner(values.address, initialData?.id);
                   update();
                   form.reset();
-                  router.refresh();
+                  router.replace("/user");
                   console.log(data.success);
                 }
               })

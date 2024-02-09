@@ -54,7 +54,7 @@ export const AddProperty = () => {
 
   const onSubmit = async (values: PropertyFormValues) => {
     startTransition(() => {
-      updateProperty(values)
+      updateProperty(values, "")
         .then((data) => {
           if (data.error) {
             console.log(data.error);

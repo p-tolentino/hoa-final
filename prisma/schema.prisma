@@ -55,26 +55,25 @@ model PersonalInfo {
   type        String?
   position    String?   @default("Member")
 
-  vehicles    Vehicle[]
-
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Vehicle {
   id       String  @id @unique @default(cuid())
-  infoId   String
+  userId   String?  
   plateNum String?
-
-  personalInfo PersonalInfo @relation(fields: [infoId], references: [id], onDelete: Cascade)
 }
 
 model Property {
   id           String        @id @unique @default(cuid())
-  userId       String?       
+  userId       String?    
+  occupantName String?   
   address      String?
   lotNumber    String?
   lotSize      String?
+  latitude     Int?
+  longitude    Int?
   documents    PropertyDocument[]
   purchaseDate DateTime?
 }

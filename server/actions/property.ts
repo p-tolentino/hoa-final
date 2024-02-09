@@ -32,10 +32,13 @@ export const updateProperty = async (
 
   await db.property.upsert({
     where: { id: propertyId },
-    update: { ...values, purchaseDate: new Date(values.purchaseDate) },
-    create: {
+    update: {
       ...values,
       userId: dbUser.id,
+      purchaseDate: new Date(values.purchaseDate),
+    },
+    create: {
+      ...values,
       purchaseDate: new Date(values.purchaseDate),
     },
   });
@@ -45,7 +48,8 @@ export const updateProperty = async (
 
 export const updatePropertyOwner = async (
   propertyId: string,
-  userId: string
+  userId: string,
+  occupantName: string
 ) => {
   const user = await currentUser();
 
@@ -63,7 +67,7 @@ export const updatePropertyOwner = async (
 
   await db.property.updateMany({
     where: { id: propertyId },
-    data: { userId },
+    data: { userId, occupantName },
   });
 
   return { success: "Updated property owner successfully" };
