@@ -176,7 +176,7 @@ export default async function NominationForm() {
         />
 
         <div className="text-center text-red-500 font-bold">
-          It is not the candidacy period for this term's election.
+          It is not the candidacy period for this term&apos;s election.
         </div>
       </>
     );

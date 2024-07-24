@@ -114,7 +114,7 @@ export const ProgressDetails: React.FC<ProgressDetailsProps> = ({
           >
             {reportDetails.maintenance.status}
             {reportDetails.maintenance.reasonToClose &&
-              ` - ${reportDetails.maintenance.reasonToClose}`}
+              `(${reportDetails.maintenance.reasonToClose})`}
           </Badge>
         }
         rightElements={

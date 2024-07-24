@@ -165,7 +165,7 @@ const LoginForm = () => {
           <Social />
           <Flex justify="center" alignItems="center">
             <span className="pt-5 text-xs">
-              Don't have an account yet?
+              Don&apos;t have an account yet?
               <Link href="/register">
                 <Button className="sm text-xs" variant="link">
                   Sign up now →

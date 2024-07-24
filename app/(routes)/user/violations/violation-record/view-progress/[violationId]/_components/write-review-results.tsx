@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import {
   Dialog,
@@ -7,18 +7,21 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger
-} from '@/components/ui/dialog'
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
   SelectTrigger,
-  SelectValue
-} from '@/components/ui/select'
-import { createOfficerTasks, updateViolation } from '@/server/actions/violation'
-import { AddIcon, DeleteIcon } from '@chakra-ui/icons'
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  createOfficerTasks,
+  updateViolation,
+} from "@/server/actions/violation";
+import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 import {
   Button,
   FormControl,
@@ -37,74 +40,74 @@ import {
   Box,
   useToast,
   RadioGroup,
-  Radio
-} from '@chakra-ui/react'
-import { Violation, PersonalInfo, ReportStatus } from '@prisma/client'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+  Radio,
+} from "@chakra-ui/react";
+import { Violation, PersonalInfo, ReportStatus } from "@prisma/client";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
-export default function WriteReviewResults ({
+export default function WriteReviewResults({
   violation,
   committee,
-  reportDetails
+  reportDetails,
 }: {
-  violation: Violation
-  committee: PersonalInfo[]
-  reportDetails: any
+  violation: Violation;
+  committee: PersonalInfo[];
+  reportDetails: any;
 }) {
-  const [isOpen, setIsOpen] = useState(false) // Dialog open state
-  const [selectedOption, setSelectedOption] = useState('')
-  const [selectedMember, setSelectedMember] = useState('')
-  const [review, setReview] = useState('')
-  const [assessment, setAssessment] = useState('')
-  const [isButtonClicked, setIsButtonClicked] = useState(false)
+  const [isOpen, setIsOpen] = useState(false); // Dialog open state
+  const [selectedOption, setSelectedOption] = useState("");
+  const [selectedMember, setSelectedMember] = useState("");
+  const [review, setReview] = useState("");
+  const [assessment, setAssessment] = useState("");
+  const [isButtonClicked, setIsButtonClicked] = useState(false);
 
-  const router = useRouter()
-  const today = new Date().toISOString().split('T')[0]
-  const toast = useToast()
+  const router = useRouter();
+  const today = new Date().toISOString().split("T")[0];
+  const toast = useToast();
 
   const [keyActivities, setKeyActivities] = useState([
-    { activity: '', dueDate: '' }
-  ])
+    { activity: "", dueDate: "" },
+  ]);
 
   const handleRadioChange = (value: string) => {
-    setSelectedOption(value)
-  }
+    setSelectedOption(value);
+  };
 
   const handleAddRow = () => {
-    setKeyActivities([...keyActivities, { activity: '', dueDate: '' }])
-  }
+    setKeyActivities([...keyActivities, { activity: "", dueDate: "" }]);
+  };
 
   const handleRemoveRow = (index: number) => {
-    const updatedActivities = [...keyActivities]
-    updatedActivities.splice(index, 1)
-    setKeyActivities(updatedActivities)
-  }
+    const updatedActivities = [...keyActivities];
+    updatedActivities.splice(index, 1);
+    setKeyActivities(updatedActivities);
+  };
 
   const onSubmit = async () => {
-    setIsButtonClicked(true)
+    setIsButtonClicked(true);
     // Validate key activities
     if (keyActivities.length === 0) {
       toast({
-        title: 'Error',
-        description: 'Please add at least one key activity.',
-        status: 'error',
-        position: 'bottom-right',
-        isClosable: true
-      })
-      return
+        title: "Error",
+        description: "Please add at least one key activity.",
+        status: "error",
+        position: "bottom-right",
+        isClosable: true,
+      });
+      return;
     }
 
     for (const activity of keyActivities) {
       if (!activity.activity || !activity.dueDate) {
         toast({
-          title: 'Error',
-          description: 'Activity and Due Date cannot be empty.',
-          status: 'error',
-          position: 'bottom-right',
-          isClosable: true
-        })
-        return
+          title: "Error",
+          description: "Activity and Due Date cannot be empty.",
+          status: "error",
+          position: "bottom-right",
+          isClosable: true,
+        });
+        return;
       }
     }
 
@@ -113,37 +116,37 @@ export default function WriteReviewResults ({
       status: ReportStatus.PENDING_LETTER_TO_BE_SENT,
       officerAssigned: selectedMember,
       commReviewDate: new Date(),
-      progress: 'Step 4: Send out Violation Letters',
-      step: 4
-    }
+      progress: "Step 4: Send out Violation Letters",
+      step: 4,
+    };
 
     const invalid = {
       committeeReview: assessment,
       status: ReportStatus.CLOSED,
-      reasonToClose: 'Insufficient Evidence'
-    }
+      reasonToClose: "Insufficient Evidence",
+    };
 
-    if (selectedOption === 'VALID') {
-      await updateViolation(violation.id, valid).then(data =>
+    if (selectedOption === "VALID") {
+      await updateViolation(violation.id, valid).then((data) =>
         console.log(data.success)
-      )
+      );
       await Promise.all(
-        keyActivities.map(async activity => {
+        keyActivities.map(async (activity) => {
           const data = {
             violationId: violation.id,
             title: activity.activity,
-            deadline: new Date(activity.dueDate)
-          }
-          await createOfficerTasks(data).then(data => {
-            console.log(data.success)
-          })
-          console.log(activity)
+            deadline: new Date(activity.dueDate),
+          };
+          await createOfficerTasks(data).then((data) => {
+            console.log(data.success);
+          });
+          console.log(activity);
         })
-      )
-    } else if (selectedOption === 'INVALID') {
-      await updateViolation(violation.id, invalid).then(data => {
-        console.log(data.success)
-      })
+      );
+    } else if (selectedOption === "INVALID") {
+      await updateViolation(violation.id, invalid).then((data) => {
+        console.log(data.success);
+      });
     }
 
     toast({
@@ -152,36 +155,36 @@ export default function WriteReviewResults ({
         <Stack spacing={0}>
           <Text>
             Violation No. #V
-            {reportDetails.violation.number.toString().padStart(4, '0')}
+            {reportDetails.violation.number.toString().padStart(4, "0")}
           </Text>
           <Text>Verdict: {selectedOption}</Text>
         </Stack>
       ),
-      status: 'success',
-      position: 'bottom-right',
+      status: "success",
+      position: "bottom-right",
       isClosable: true,
-      colorScheme: selectedOption === 'VALID' ? 'green' : 'red'
-    })
+      colorScheme: selectedOption === "VALID" ? "green" : "red",
+    });
 
-    window.location.reload()
+    window.location.reload();
 
-    setIsOpen(false)
-    router.refresh()
+    setIsOpen(false);
+    router.refresh();
     router.push(
       `/user/violations/violation-record/view-progress/${violation.id}`
-    )
-  }
+    );
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button size='sm' colorScheme='yellow'>
+        <Button size="sm" colorScheme="yellow">
           Write Case Review Results
         </Button>
       </DialogTrigger>
       <DialogContent>
         <form>
-          <DialogHeader className='mb-5'>
+          <DialogHeader className="mb-5">
             <DialogTitle>Write Case Review Results</DialogTitle>
             <DialogDescription>
               Fill out the following fields to write the case review results
@@ -190,41 +193,41 @@ export default function WriteReviewResults ({
           </DialogHeader>
           {/* Form Content */}
           <Stack
-            spacing='15px'
-            my='1.5rem'
-            h={selectedOption ? '300px' : 'min-content'}
+            spacing="15px"
+            my="1.5rem"
+            h={selectedOption ? "300px" : "min-content"}
             pr={3}
-            overflowY='auto'
-            fontFamily='font.body'
+            overflowY="auto"
+            fontFamily="font.body"
           >
             <Stack>
-              <Text fontSize='sm'>
-                What is the committee's verdict for this violation case?
+              <Text fontSize="sm">
+                What is the committee&apos;s verdict for this violation case?
               </Text>
               <RadioGroup
-                defaultValue=''
-                size='sm'
+                defaultValue=""
+                size="sm"
                 value={selectedOption}
                 onChange={handleRadioChange}
               >
-                <Stack direction='column' textAlign='justify'>
+                <Stack direction="column" textAlign="justify">
                   <Box
-                    pl='0.5rem'
-                    bg={selectedOption === 'VALID' ? 'yellow.100' : ''}
+                    pl="0.5rem"
+                    bg={selectedOption === "VALID" ? "yellow.100" : ""}
                   >
-                    <Radio value='VALID' colorScheme='yellow'>
-                      The violation case is{' '}
-                      <span className='font-bold'>VALID</span> and requires
+                    <Radio value="VALID" colorScheme="yellow">
+                      The violation case is{" "}
+                      <span className="font-bold">VALID</span> and requires
                       immediate actions.
                     </Radio>
                   </Box>
                   <Box
-                    pl='0.5rem'
-                    bg={selectedOption === 'INVALID' ? 'red.100' : ''}
+                    pl="0.5rem"
+                    bg={selectedOption === "INVALID" ? "red.100" : ""}
                   >
-                    <Radio value='INVALID' colorScheme='red'>
-                      The violation case is{' '}
-                      <span className='font-bold'>INVALID</span> due to the lack
+                    <Radio value="INVALID" colorScheme="red">
+                      The violation case is{" "}
+                      <span className="font-bold">INVALID</span> due to the lack
                       of sufficient evidence.
                     </Radio>
                   </Box>
@@ -233,26 +236,26 @@ export default function WriteReviewResults ({
             </Stack>
 
             {/* when VALID option is clicked */}
-            {selectedOption === 'VALID' && (
-              <Stack spacing={5} overflowY='auto' h='250px' px={1}>
+            {selectedOption === "VALID" && (
+              <Stack spacing={5} overflowY="auto" h="250px" px={1}>
                 <FormControl isRequired>
                   <Stack spacing={2}>
                     <Textarea
-                      fontSize='sm'
-                      placeholder='Provide a brief review of the report...'
-                      resize='none'
+                      fontSize="sm"
+                      placeholder="Provide a brief review of the report..."
+                      resize="none"
                       value={review}
-                      onChange={e => setReview(e.target.value)}
+                      onChange={(e) => setReview(e.target.value)}
                     />
                   </Stack>
                 </FormControl>
                 <FormControl isRequired>
                   <Stack spacing={2}>
                     <Box>
-                      <FormLabel fontSize='sm' fontWeight='semibold' mb='0'>
+                      <FormLabel fontSize="sm" fontWeight="semibold" mb="0">
                         Assign Officer
                       </FormLabel>
-                      <Text fontSize='sm'>
+                      <Text fontSize="sm">
                         Please select a <u>Security Officer</u> to oversee the
                         resolution of this violation case.
                       </Text>
@@ -262,11 +265,11 @@ export default function WriteReviewResults ({
                       onValueChange={setSelectedMember}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder='Select committee member' />
+                        <SelectValue placeholder="Select committee member" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
-                          {committee.map(member => (
+                          {committee.map((member) => (
                             <SelectItem
                               key={member.userId}
                               value={member.userId}
@@ -282,54 +285,54 @@ export default function WriteReviewResults ({
                 <FormControl isRequired>
                   <Stack spacing={2}>
                     <Box>
-                      <FormLabel fontSize='sm' fontWeight='semibold' mb='0'>
+                      <FormLabel fontSize="sm" fontWeight="semibold" mb="0">
                         Key Activities and Due Dates
                       </FormLabel>
-                      <Text fontSize='sm'>
+                      <Text fontSize="sm">
                         Please enter the key activities and its corresponding
                         due dates to enforce immediate actions for this
                         violation case.
                       </Text>
                     </Box>
                     <TableContainer
-                      mx='1rem'
-                      mt='0.5rem'
-                      overflowY='auto'
-                      h='120px'
+                      mx="1rem"
+                      mt="0.5rem"
+                      overflowY="auto"
+                      h="120px"
                     >
-                      <Table size='xs' variant='simple'>
+                      <Table size="xs" variant="simple">
                         <Thead>
                           <Tr>
-                            <Th fontSize='xs' w='full'>
+                            <Th fontSize="xs" w="full">
                               Activity
                             </Th>
-                            <Th fontSize='xs'>Due Date</Th>
-                            <Th px='10px'>
+                            <Th fontSize="xs">Due Date</Th>
+                            <Th px="10px">
                               {/* Add Row Button */}
-                              <Button size='xs' onClick={handleAddRow}>
+                              <Button size="xs" onClick={handleAddRow}>
                                 <AddIcon />
                               </Button>
                             </Th>
                           </Tr>
                         </Thead>
-                        <Tbody fontSize='sm'>
+                        <Tbody fontSize="sm">
                           {keyActivities.map((activity, index) => (
                             <Tr key={index}>
                               {/* Activity Input */}
                               <Td>
                                 <FormControl isRequired>
                                   <Input
-                                    type='text'
-                                    fontSize='sm'
-                                    w='95%'
+                                    type="text"
+                                    fontSize="sm"
+                                    w="95%"
                                     value={activity.activity}
-                                    onChange={e => {
+                                    onChange={(e) => {
                                       const updatedActivities = [
-                                        ...keyActivities
-                                      ]
+                                        ...keyActivities,
+                                      ];
                                       updatedActivities[index].activity =
-                                        e.target.value
-                                      setKeyActivities(updatedActivities)
+                                        e.target.value;
+                                      setKeyActivities(updatedActivities);
                                     }}
                                   />
                                 </FormControl>
@@ -338,27 +341,27 @@ export default function WriteReviewResults ({
                               <Td>
                                 <FormControl isRequired>
                                   <Input
-                                    type='date'
+                                    type="date"
                                     min={today}
-                                    fontSize='sm'
+                                    fontSize="sm"
                                     value={activity.dueDate}
-                                    onChange={e => {
+                                    onChange={(e) => {
                                       const updatedActivities = [
-                                        ...keyActivities
-                                      ]
+                                        ...keyActivities,
+                                      ];
                                       updatedActivities[index].dueDate =
-                                        e.target.value
-                                      setKeyActivities(updatedActivities)
+                                        e.target.value;
+                                      setKeyActivities(updatedActivities);
                                     }}
                                   />
                                 </FormControl>
                               </Td>
                               {/* Delete Button */}
                               {index > 0 && (
-                                <Td textAlign='center'>
+                                <Td textAlign="center">
                                   <Button
-                                    size='xs'
-                                    colorScheme='red'
+                                    size="xs"
+                                    colorScheme="red"
                                     onClick={() => handleRemoveRow(index)}
                                   >
                                     <DeleteIcon />
@@ -376,15 +379,15 @@ export default function WriteReviewResults ({
             )}
 
             {/* when INVALID option is clicked */}
-            {selectedOption === 'INVALID' && (
+            {selectedOption === "INVALID" && (
               <Stack>
                 <Textarea
-                  fontSize='sm'
-                  placeholder='Provide a brief explanation for the invalidity of this violation case to the homeowner who filed the report...'
-                  height='25vh'
-                  resize='none'
+                  fontSize="sm"
+                  placeholder="Provide a brief explanation for the invalidity of this violation case to the homeowner who filed the report..."
+                  height="25vh"
+                  resize="none"
                   value={assessment}
-                  onChange={e => setAssessment(e.target.value)}
+                  onChange={(e) => setAssessment(e.target.value)}
                 />
               </Stack>
             )}
@@ -392,22 +395,22 @@ export default function WriteReviewResults ({
           <DialogFooter>
             {/* FINISH REVIEW: when VALID option is clicked */}
             <Button
-              size='sm'
-              colorScheme={selectedOption === 'VALID' ? 'yellow' : 'red'}
-              type='button'
+              size="sm"
+              colorScheme={selectedOption === "VALID" ? "yellow" : "red"}
+              type="button"
               isLoading={isButtonClicked}
               loadingText={
-                selectedOption === 'VALID' ? 'Submitting' : 'Closing'
+                selectedOption === "VALID" ? "Submitting" : "Closing"
               }
               onClick={() => onSubmit()}
             >
-              {selectedOption === 'VALID'
-                ? 'Submit Review'
-                : 'Close Violation Case'}
+              {selectedOption === "VALID"
+                ? "Submit Review"
+                : "Close Violation Case"}
             </Button>
           </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

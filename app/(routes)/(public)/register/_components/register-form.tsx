@@ -102,7 +102,7 @@ export const RegisterForm = ({
               textAlign="center"
               mb="3"
             >
-              Let's get started!
+              Let&apos;s get started!
             </Heading>
             <Text
               size="sm"

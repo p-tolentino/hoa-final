@@ -19,103 +19,105 @@ import {
   Divider,
   Link,
   Spinner,
-  OrderedList
-} from '@chakra-ui/react'
-import { format } from 'date-fns'
+  OrderedList,
+} from "@chakra-ui/react";
+import { format } from "date-fns";
 import {
   Letter,
   PersonalInfo,
   UserRole,
   ViolationOfficerActivity,
-  ViolationProgress
-} from '@prisma/client'
-import ViewProgressReport from './view-progress-report'
-import ViewReviewResults from './view-review-results'
-import { useCurrentUser } from '@/hooks/use-current-user'
-import { useEffect, useState } from 'react'
-import { getLetterByViolationId } from '@/server/data/letter-notice'
+  ViolationProgress,
+} from "@prisma/client";
+import ViewProgressReport from "./view-progress-report";
+import ViewReviewResults from "./view-review-results";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import { useEffect, useState } from "react";
+import { getLetterByViolationId } from "@/server/data/letter-notice";
 
 interface ProcessStep {
-  value: string
-  title: string
-  description: string
-  details: string[]
+  value: string;
+  title: string;
+  description: string;
+  details: string[];
 }
 
 interface StepCardProps {
-  stepIndex: number
-  processSteps: ProcessStep[]
-  reportDetails: any
+  stepIndex: number;
+  processSteps: ProcessStep[];
+  reportDetails: any;
 }
 
-export default function StepCard ({
+export default function StepCard({
   stepIndex,
   processSteps,
-  reportDetails
+  reportDetails,
 }: StepCardProps) {
-  const user = useCurrentUser()
+  const user = useCurrentUser();
   const { activeStep } = useSteps({
     index: 0,
-    count: reportDetails.officerActivities.length
-  })
+    count: reportDetails.officerActivities.length,
+  });
 
-  const [letter, setLetter] = useState<Letter | null | undefined>()
+  const [letter, setLetter] = useState<Letter | null | undefined>();
 
   useEffect(() => {
     try {
-      getLetterByViolationId(reportDetails.violation.id).then(letter => {
-        if (letter) {
-          setLetter(letter)
-        }
-      })
+      if (reportDetails.violation.id) {
+        getLetterByViolationId(reportDetails.violation.id).then((letter) => {
+          if (letter) {
+            setLetter(letter);
+          }
+        });
+      }
     } catch (err) {
-      console.log(err)
+      console.log(err);
     }
-  }, [stepIndex])
+  }, [reportDetails.violation.id, stepIndex]);
 
   // Format Currency, whether it be a type number or string
   const formatCurrency = (amount: number | string) => {
     const numericAmount =
-      typeof amount === 'string' ? parseFloat(amount) : amount
+      typeof amount === "string" ? parseFloat(amount) : amount;
 
-    return new Intl.NumberFormat('en-PH', {
-      style: 'currency',
-      currency: 'PHP'
-    }).format(numericAmount)
-  }
+    return new Intl.NumberFormat("en-PH", {
+      style: "currency",
+      currency: "PHP",
+    }).format(numericAmount);
+  };
 
   return (
-    <Card shadow='lg' my='1.5rem' h='62vh' p='10px 10px 20px 10px'>
+    <Card shadow="lg" my="1.5rem" h="62vh" p="10px 10px 20px 10px">
       <CardHeader pb={0}>
         <Text
-          fontSize='sm'
-          fontFamily='font.body'
-          color='brand.500'
-          fontWeight='bold'
+          fontSize="sm"
+          fontFamily="font.body"
+          color="brand.500"
+          fontWeight="bold"
         >
           Step {stepIndex + 1}
         </Text>
-        <Text fontSize='lg' fontFamily='font.heading' fontWeight='bold'>
+        <Text fontSize="lg" fontFamily="font.heading" fontWeight="bold">
           {/* Step Title */}
           {processSteps[stepIndex].title}
         </Text>
-        <Text fontFamily='font.body' textAlign='justify'>
+        <Text fontFamily="font.body" textAlign="justify">
           {/* Step Description */}
           {processSteps[stepIndex].description}
         </Text>
-        <Divider mt='0.5rem' />
+        <Divider mt="0.5rem" />
       </CardHeader>
       <CardBody pt={2}>
-        <Box overflowY='auto' h='42vh'>
+        <Box overflowY="auto" h="42vh">
           <Box
-            fontFamily='font.body'
-            fontSize='sm'
-            textAlign='justify'
-            mb='2rem'
+            fontFamily="font.body"
+            fontSize="sm"
+            textAlign="justify"
+            mb="2rem"
           >
             {/* Step Details */}
             <Text>Details:</Text>
-            <UnorderedList mb='1rem' ml={7}>
+            <UnorderedList mb="1rem" ml={7}>
               {processSteps[stepIndex].details.map((detail, index) => (
                 <ListItem key={index}>{detail}</ListItem>
               ))}
@@ -127,69 +129,69 @@ export default function StepCard ({
             <Box pb={5}>
               <Box>
                 <Text
-                  fontWeight='semibold'
-                  fontFamily='font.heading'
+                  fontWeight="semibold"
+                  fontFamily="font.heading"
                   lineHeight={1}
                 >
                   Violation Form Contents
                 </Text>
-                <Text fontFamily='font.body' fontSize='sm' color='grey'>
-                  Date received:{' '}
+                <Text fontFamily="font.body" fontSize="sm" color="grey">
+                  Date received:{" "}
                   {reportDetails.violation.createdAt
                     ? format(
-                        new Date(reportDetails.violation.createdAt + 'Z')
+                        new Date(reportDetails.violation.createdAt + "Z")
                           ?.toISOString()
-                          .split('T')[0],
-                        'dd MMM yyyy'
+                          .split("T")[0],
+                        "dd MMM yyyy"
                       )
-                    : ''}
+                    : ""}
                 </Text>
               </Box>
-              <Flex gap={5} pt='1rem'>
+              <Flex gap={5} pt="1rem">
                 <TableContainer>
                   <Table
-                    variant='unstyled'
-                    fontFamily='font.body'
-                    size='sm'
-                    w='400px'
+                    variant="unstyled"
+                    fontFamily="font.body"
+                    size="sm"
+                    w="400px"
                   >
                     <Tbody>
-                      <Tr whiteSpace='normal'>
-                        <Th border='3px double black' w='150px'>
+                      <Tr whiteSpace="normal">
+                        <Th border="3px double black" w="150px">
                           Violation Case No.
                         </Th>
-                        <Td border='3px double black'>
+                        <Td border="3px double black">
                           #V
                           {reportDetails.violation.number
                             .toString()
-                            .padStart(4, '0')}
+                            .padStart(4, "0")}
                         </Td>
                       </Tr>
-                      <Tr whiteSpace='normal'>
-                        <Th border='3px double black' w='150px'>
+                      <Tr whiteSpace="normal">
+                        <Th border="3px double black" w="150px">
                           Violation Type
                         </Th>
-                        <Td border='3px double black'>
+                        <Td border="3px double black">
                           {reportDetails.violationType.title}
                         </Td>
                       </Tr>
-                      <Tr whiteSpace='normal'>
-                        <Th border='3px double black' w='150px'>
+                      <Tr whiteSpace="normal">
+                        <Th border="3px double black" w="150px">
                           Submitted By
                         </Th>
-                        <Td border='3px double black'>
+                        <Td border="3px double black">
                           {reportDetails.submittedBy
                             ? `${reportDetails.submittedBy.firstName} ${reportDetails.submittedBy.lastName}`
-                            : ''}
+                            : ""}
                         </Td>
                       </Tr>
-                      <Tr whiteSpace='normal'>
-                        <Th border='3px double black' w='150px'>
+                      <Tr whiteSpace="normal">
+                        <Th border="3px double black" w="150px">
                           Violator
                         </Th>
-                        <Td border='3px double black'>
+                        <Td border="3px double black">
                           <>
-                            {reportDetails.personsInvolved[0].firstName}{' '}
+                            {reportDetails.personsInvolved[0].firstName}{" "}
                             {reportDetails.personsInvolved[0].lastName}
                           </>
                         </Td>
@@ -199,62 +201,62 @@ export default function StepCard ({
                 </TableContainer>
                 <TableContainer>
                   <Table
-                    variant='unstyled'
-                    fontFamily='font.body'
-                    size='sm'
-                    minWidth='400px'
+                    variant="unstyled"
+                    fontFamily="font.body"
+                    size="sm"
+                    minWidth="400px"
                   >
                     <Tbody>
                       <>
-                        <Tr whiteSpace='normal'>
-                          <Th border='3px double black' w='150px'>
+                        <Tr whiteSpace="normal">
+                          <Th border="3px double black" w="150px">
                             Date Submitted
                           </Th>
-                          <Td border='3px double black'>
+                          <Td border="3px double black">
                             {reportDetails.violation.createdAt
                               ? format(
                                   new Date(
-                                    reportDetails.violation.createdAt + 'Z'
+                                    reportDetails.violation.createdAt + "Z"
                                   )
                                     ?.toISOString()
-                                    .split('T')[0],
-                                  'dd MMM yyyy'
+                                    .split("T")[0],
+                                  "dd MMM yyyy"
                                 )
-                              : ''}
+                              : ""}
                           </Td>
                         </Tr>
-                        <Tr whiteSpace='normal'>
-                          <Th border='3px double black' w='150px'>
+                        <Tr whiteSpace="normal">
+                          <Th border="3px double black" w="150px">
                             Date of Violation
                           </Th>
-                          <Td border='3px double black'>
+                          <Td border="3px double black">
                             {reportDetails.violation.violationDate
                               ? format(
                                   new Date(
-                                    reportDetails.violation.violationDate + 'Z'
+                                    reportDetails.violation.violationDate + "Z"
                                   )
                                     ?.toISOString()
-                                    .split('T')[0],
-                                  'dd MMM yyyy'
+                                    .split("T")[0],
+                                  "dd MMM yyyy"
                                 )
-                              : ''}
+                              : ""}
                           </Td>
                         </Tr>
-                        <Tr whiteSpace='normal'>
-                          <Th border='3px double black' w='150px'>
+                        <Tr whiteSpace="normal">
+                          <Th border="3px double black" w="150px">
                             Supporting Documents
                           </Th>
                           <Td
-                            border='3px double black'
+                            border="3px double black"
                             color={
                               reportDetails.violation.documents.length
-                                ? 'black'
-                                : 'lightgrey'
+                                ? "black"
+                                : "lightgrey"
                             }
                             fontStyle={
                               reportDetails.violation.documents.length
-                                ? 'initial'
-                                : 'italic'
+                                ? "initial"
+                                : "italic"
                             }
                           >
                             {reportDetails.violation.documents.length ? (
@@ -264,14 +266,14 @@ export default function StepCard ({
                                     <ListItem key={index}>
                                       <Link
                                         href={document}
-                                        target='_blank'
-                                        color='blue.600'
+                                        target="_blank"
+                                        color="blue.600"
                                       >
                                         <>
                                           Supporting Document {index + 1} (.
-                                          {document.includes('.pdf')
-                                            ? 'pdf'
-                                            : 'png'}
+                                          {document.includes(".pdf")
+                                            ? "pdf"
+                                            : "png"}
                                           )
                                         </>
                                       </Link>
@@ -280,7 +282,7 @@ export default function StepCard ({
                                 )}
                               </UnorderedList>
                             ) : (
-                              'N/A'
+                              "N/A"
                             )}
                           </Td>
                         </Tr>
@@ -291,23 +293,23 @@ export default function StepCard ({
               </Flex>
               <TableContainer>
                 <Table
-                  variant='unstyled'
-                  fontFamily='font.body'
-                  size='sm'
-                  w='820px'
+                  variant="unstyled"
+                  fontFamily="font.body"
+                  size="sm"
+                  w="820px"
                   mt={5}
                 >
                   <Tbody>
-                    <Tr whiteSpace='normal'>
-                      <Th border='3px double black' textAlign='center'>
+                    <Tr whiteSpace="normal">
+                      <Th border="3px double black" textAlign="center">
                         Violation Form Description
                       </Th>
                     </Tr>
-                    <Tr whiteSpace='normal'>
+                    <Tr whiteSpace="normal">
                       <Td
-                        border='3px double black'
-                        fontSize='xs'
-                        textAlign='justify'
+                        border="3px double black"
+                        fontSize="xs"
+                        textAlign="justify"
                       >
                         {reportDetails.violation.description}
                       </Td>
@@ -328,14 +330,14 @@ export default function StepCard ({
                 />
               ) : (
                 <Box
-                  h='24vh'
-                  border='1px solid lightgray'
+                  h="24vh"
+                  border="1px solid lightgray"
                   borderRadius={5}
                   p={3}
-                  overflowY='auto'
+                  overflowY="auto"
                   flex={3}
                 >
-                  <Center color='gray' h='50%' fontFamily='font.body'>
+                  <Center color="gray" h="50%" fontFamily="font.body">
                     No results to show.
                   </Center>
                 </Box>
@@ -348,80 +350,80 @@ export default function StepCard ({
             <Box>
               <Box>
                 <Text
-                  fontWeight='semibold'
-                  fontFamily='font.heading'
+                  fontWeight="semibold"
+                  fontFamily="font.heading"
                   lineHeight={1}
                 >
                   Officer Assigned
                 </Text>
-                <Text fontFamily='font.body' fontSize='sm' color='grey'>
-                  Date assigned:{' '}
+                <Text fontFamily="font.body" fontSize="sm" color="grey">
+                  Date assigned:{" "}
                   {reportDetails.violation.commReviewDate
                     ? format(
-                        new Date(reportDetails.violation.commReviewDate + 'Z')
+                        new Date(reportDetails.violation.commReviewDate + "Z")
                           ?.toISOString()
-                          .split('T')[0],
-                        'dd MMM yyyy'
+                          .split("T")[0],
+                        "dd MMM yyyy"
                       )
-                    : ''}
+                    : ""}
                 </Text>
               </Box>
-              <Stack w='400px' spacing='0.5rem' pt='1rem'>
+              <Stack w="400px" spacing="0.5rem" pt="1rem">
                 <TableContainer>
                   <Table
-                    variant='unstyled'
-                    fontFamily='font.body'
-                    size='sm'
-                    w='400px'
+                    variant="unstyled"
+                    fontFamily="font.body"
+                    size="sm"
+                    w="400px"
                   >
                     <Tbody>
-                      <Tr whiteSpace='normal'>
-                        <Th border='3px double black' w='110px'>
+                      <Tr whiteSpace="normal">
+                        <Th border="3px double black" w="110px">
                           Officer Assigned
                         </Th>
                         <Td
-                          border='3px double black'
+                          border="3px double black"
                           color={
                             reportDetails.officerAssigned
-                              ? 'black'
-                              : 'lightgray'
+                              ? "black"
+                              : "lightgray"
                           }
                           fontStyle={
-                            reportDetails.officerAssigned ? 'normal' : 'italic'
+                            reportDetails.officerAssigned ? "normal" : "italic"
                           }
                         >
                           {reportDetails.officerAssigned
                             ? `${reportDetails.officerAssigned.firstName} ${reportDetails.officerAssigned.lastName}`
-                            : 'Unassigned'}
+                            : "Unassigned"}
                         </Td>
                       </Tr>
                       {reportDetails.violation.priority && (
-                        <Tr whiteSpace='normal'>
-                          <Th border='3px double black' w='110px'>
+                        <Tr whiteSpace="normal">
+                          <Th border="3px double black" w="110px">
                             Case Priority
                           </Th>
                           <Td
-                            border='3px double black'
+                            border="3px double black"
                             color={
-                              reportDetails.priority === 'HIGH'
-                                ? 'red'
-                                : 'MEDIUM'
-                                ? 'orange'
-                                : 'LOW'
-                                ? 'yellow'
-                                : ''
+                              reportDetails.priority === "HIGH"
+                                ? "red"
+                                : "MEDIUM"
+                                ? "orange"
+                                : "LOW"
+                                ? "yellow"
+                                : ""
                             }
                           >
                             {reportDetails.priority
                               ? `${reportDetails.priority}`
-                              : 'N/A'}
+                              : "N/A"}
                           </Td>
                         </Tr>
                       )}
                     </Tbody>
                   </Table>
                 </TableContainer>
-                <Text fontSize='xs' fontFamily='font.body' textAlign='justify'>
+                <Text fontSize="xs" fontFamily="font.body" textAlign="justify">
                   This officer has been assigned to oversee this case
                   exclusively. They are the sole authorized individual to
                   provide progress reports regarding this case.
@@ -438,64 +440,64 @@ export default function StepCard ({
                   <Box pb={5}>
                     <Box>
                       <Text
-                        fontWeight='semibold'
-                        fontFamily='font.heading'
+                        fontWeight="semibold"
+                        fontFamily="font.heading"
                         lineHeight={1}
                       >
                         Violation Letter Contents
                       </Text>
-                      <Text fontFamily='font.body' fontSize='sm' color='grey'>
-                        Date sent:{' '}
+                      <Text fontFamily="font.body" fontSize="sm" color="grey">
+                        Date sent:{" "}
                         {letter &&
                           format(
-                            new Date(letter.createdAt + 'Z')
+                            new Date(letter.createdAt + "Z")
                               ?.toISOString()
-                              .split('T')[0],
-                            'dd MMM yyyy'
+                              .split("T")[0],
+                            "dd MMM yyyy"
                           )}
                       </Text>
                     </Box>
-                    <Flex gap={5} pt='1rem'>
+                    <Flex gap={5} pt="1rem">
                       <TableContainer>
                         <Table
-                          variant='unstyled'
-                          fontFamily='font.body'
-                          size='sm'
-                          minWidth='400px'
+                          variant="unstyled"
+                          fontFamily="font.body"
+                          size="sm"
+                          minWidth="400px"
                         >
                           <Tbody>
-                            <Tr whiteSpace='normal'>
-                              <Th border='3px double black' w='150px'>
+                            <Tr whiteSpace="normal">
+                              <Th border="3px double black" w="150px">
                                 Date of Letter sent
                               </Th>
-                              <Td border='3px double black'>
+                              <Td border="3px double black">
                                 {letter &&
                                   format(
-                                    new Date(letter.createdAt + 'Z')
+                                    new Date(letter.createdAt + "Z")
                                       ?.toISOString()
-                                      .split('T')[0],
-                                    'dd MMM yyyy'
+                                      .split("T")[0],
+                                    "dd MMM yyyy"
                                   )}
                               </Td>
                             </Tr>
-                            <Tr whiteSpace='normal'>
-                              <Th border='3px double black' w='150px'>
+                            <Tr whiteSpace="normal">
+                              <Th border="3px double black" w="150px">
                                 Sender
                               </Th>
-                              <Td border='3px double black'>
+                              <Td border="3px double black">
                                 {reportDetails.officerAssigned
                                   ? `${reportDetails.officerAssigned.firstName} ${reportDetails.officerAssigned.lastName}`
-                                  : ''}
+                                  : ""}
                               </Td>
                             </Tr>
-                            <Tr whiteSpace='normal'>
-                              <Th border='3px double black' w='150px'>
+                            <Tr whiteSpace="normal">
+                              <Th border="3px double black" w="150px">
                                 Recipient
                               </Th>
-                              <Td border='3px double black'>
+                              <Td border="3px double black">
                                 {reportDetails.personsInvolved && (
                                   <>
-                                    {reportDetails.personsInvolved[0].firstName}{' '}
+                                    {reportDetails.personsInvolved[0].firstName}{" "}
                                     {reportDetails.personsInvolved[0].lastName}
                                   </>
                                 )}
@@ -506,22 +508,22 @@ export default function StepCard ({
                       </TableContainer>
                       <TableContainer>
                         <Table
-                          variant='unstyled'
-                          fontFamily='font.body'
-                          size='sm'
-                          w='600px'
+                          variant="unstyled"
+                          fontFamily="font.body"
+                          size="sm"
+                          w="600px"
                         >
                           <Tbody>
-                            <Tr whiteSpace='normal'>
-                              <Th border='3px double black' textAlign='center'>
+                            <Tr whiteSpace="normal">
+                              <Th border="3px double black" textAlign="center">
                                 Violation Letter Description
                               </Th>
                             </Tr>
-                            <Tr whiteSpace='normal'>
+                            <Tr whiteSpace="normal">
                               <Td
-                                border='3px double black'
-                                fontSize='xs'
-                                textAlign='justify'
+                                border="3px double black"
+                                fontSize="xs"
+                                textAlign="justify"
                               >
                                 {letter && letter.description}
                               </Td>
@@ -536,14 +538,14 @@ export default function StepCard ({
                 )
               ) : (
                 <Box
-                  h='24vh'
-                  border='1px solid lightgray'
+                  h="24vh"
+                  border="1px solid lightgray"
                   borderRadius={5}
                   p={3}
-                  overflowY='auto'
+                  overflowY="auto"
                   flex={3}
                 >
-                  <Center color='gray' h='50%' fontFamily='font.body'>
+                  <Center color="gray" h="50%" fontFamily="font.body">
                     No results to show.
                   </Center>
                 </Box>
@@ -557,27 +559,27 @@ export default function StepCard ({
               <Box>
                 <Box>
                   <Text
-                    fontWeight='semibold'
-                    fontFamily='font.heading'
+                    fontWeight="semibold"
+                    fontFamily="font.heading"
                     lineHeight={1}
                   >
                     Key Activities
                   </Text>
-                  <Text fontFamily='font.body' fontSize='sm'>
+                  <Text fontFamily="font.body" fontSize="sm">
                     You may click the activity title to view its progress
                     reports.
                   </Text>
                 </Box>
                 <Box
-                  h='120px'
-                  border='1px solid lightgray'
+                  h="120px"
+                  border="1px solid lightgray"
                   borderRadius={5}
                   p={3}
-                  overflowY='auto'
-                  mt='1rem'
-                  w='520px'
+                  overflowY="auto"
+                  mt="1rem"
+                  w="520px"
                 >
-                  <OrderedList fontSize='sm' fontFamily='font.body' spacing={3}>
+                  <OrderedList fontSize="sm" fontFamily="font.body" spacing={3}>
                     {reportDetails.officerActivities
                       .sort((a: any, b: any) => a.deadline - b.deadline)
                       .map((activity: ViolationOfficerActivity) => (
@@ -604,39 +606,39 @@ export default function StepCard ({
                 <Flex gap={10}>
                   <Box>
                     <Text
-                      fontWeight='semibold'
-                      fontFamily='font.heading'
+                      fontWeight="semibold"
+                      fontFamily="font.heading"
                       lineHeight={1}
                     >
                       Violation Case: Review Results
                     </Text>
-                    <Text fontFamily='font.body' fontSize='sm' color='grey'>
-                      Date submitted final review:{' '}
+                    <Text fontFamily="font.body" fontSize="sm" color="grey">
+                      Date submitted final review:{" "}
                       {reportDetails.violation.finalReviewDate
                         ? format(
                             new Date(
-                              reportDetails.violation.finalReviewDate + 'Z'
+                              reportDetails.violation.finalReviewDate + "Z"
                             )
                               ?.toISOString()
-                              .split('T')[0],
-                            'dd MMM yyyy'
+                              .split("T")[0],
+                            "dd MMM yyyy"
                           )
-                        : ''}
+                        : ""}
                     </Text>
                     <Box
-                      h='18vh'
-                      border='1px solid lightgray'
+                      h="18vh"
+                      border="1px solid lightgray"
                       borderRadius={5}
                       p={3}
-                      overflowY='auto'
+                      overflowY="auto"
                       flex={3}
-                      mt='1rem'
-                      w='600px'
+                      mt="1rem"
+                      w="600px"
                     >
                       <Text
-                        fontFamily='font.body'
-                        fontSize='sm'
-                        textAlign='justify'
+                        fontFamily="font.body"
+                        fontSize="sm"
+                        textAlign="justify"
                       >
                         {reportDetails.violation.finalReview}
                       </Text>
@@ -644,69 +646,69 @@ export default function StepCard ({
                   </Box>
                   <Box>
                     <Text
-                      fontWeight='semibold'
-                      fontFamily='font.heading'
+                      fontWeight="semibold"
+                      fontFamily="font.heading"
                       lineHeight={1}
                     >
                       Violation Enforcement Information
                     </Text>
-                    <Text fontFamily='font.body' fontSize='sm' color='grey'>
-                      Date enforced:{' '}
+                    <Text fontFamily="font.body" fontSize="sm" color="grey">
+                      Date enforced:{" "}
                       {reportDetails.violation.finalReviewDate
                         ? format(
                             new Date(
-                              reportDetails.violation.finalReviewDate + 'Z'
+                              reportDetails.violation.finalReviewDate + "Z"
                             )
                               ?.toISOString()
-                              .split('T')[0],
-                            'dd MMM yyyy'
+                              .split("T")[0],
+                            "dd MMM yyyy"
                           )
-                        : ''}
+                        : ""}
                     </Text>
 
-                    <Stack w='400px' spacing='0.5rem' pt='1rem'>
+                    <Stack w="400px" spacing="0.5rem" pt="1rem">
                       <TableContainer>
                         <Table
-                          variant='unstyled'
-                          fontFamily='font.body'
-                          size='sm'
-                          w='400px'
+                          variant="unstyled"
+                          fontFamily="font.body"
+                          size="sm"
+                          w="400px"
                         >
                           <Tbody>
-                            <Tr whiteSpace='normal'>
-                              <Th border='3px double black' w='150px'>
+                            <Tr whiteSpace="normal">
+                              <Th border="3px double black" w="150px">
                                 Violation Type
                               </Th>
-                              <Td border='3px double black'>
+                              <Td border="3px double black">
                                 {reportDetails.violationType.title}
                               </Td>
                             </Tr>
-                            <Tr whiteSpace='normal'>
-                              <Th border='3px double black' w='150px'>
+                            <Tr whiteSpace="normal">
+                              <Th border="3px double black" w="150px">
                                 Reason to Close
                               </Th>
-                              <Td border='3px double black'>
+                              <Td border="3px double black">
                                 {reportDetails.violation.reasonToClose}
                               </Td>
                             </Tr>
-                            <Tr whiteSpace='normal'>
-                              <Th border='3px double black' w='150px'>
+                            <Tr whiteSpace="normal">
+                              <Th border="3px double black" w="150px">
                                 Penalty Fee
                               </Th>
                               <Td
-                                border='3px double black'
+                                border="3px double black"
                                 fontStyle={
-                                  reportDetails.violation.feeToIncur !== 'N/A'
-                                    ? 'initial'
-                                    : 'italic'
+                                  reportDetails.violation.feeToIncur !== "N/A"
+                                    ? "initial"
+                                    : "italic"
                                 }
                                 color={
                                   reportDetails.violation.feeToIncur
-                                    ? 'red.500'
-                                    : 'lightgrey'
+                                    ? "red.500"
+                                    : "lightgrey"
                                 }
                               >
-                                {reportDetails.violation.feeToIncur !== 'N/A'
+                                {reportDetails.violation.feeToIncur !== "N/A"
                                   ? formatCurrency(
                                       reportDetails.violation.feeToIncur
                                     )
@@ -721,14 +723,14 @@ export default function StepCard ({
                 </Flex>
               ) : (
                 <Box
-                  h='24vh'
-                  border='1px solid lightgray'
+                  h="24vh"
+                  border="1px solid lightgray"
                   borderRadius={5}
                   p={3}
-                  overflowY='auto'
+                  overflowY="auto"
                   flex={3}
                 >
-                  <Center color='gray' h='50%' fontFamily='font.body'>
+                  <Center color="gray" h="50%" fontFamily="font.body">
                     No results to show.
                   </Center>
                 </Box>
@@ -738,5 +740,5 @@ export default function StepCard ({
         </Box>
       </CardBody>
     </Card>
-  )
+  );
 }

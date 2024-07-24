@@ -1,16 +1,16 @@
-'use client'
+"use client";
 
-import * as z from 'zod'
-import React from 'react'
-import { Heading } from '@/components/ui/heading'
-import BackButton from '@/components/system/BackButton'
+import * as z from "zod";
+import React from "react";
+import { Heading } from "@/components/ui/heading";
+import BackButton from "@/components/system/BackButton";
 
-import { HomeownerColumn, columns } from './columns'
-import { DataTable } from '@/components/ui/data-table'
+import { HomeownerColumn, columns } from "./columns";
+import { DataTable } from "@/components/ui/data-table";
 
-import { useReactToPrint } from 'react-to-print'
-import { useRef } from 'react'
-import PDFTable from '@/components/system/PDFTable'
+import { useReactToPrint } from "react-to-print";
+import { useRef } from "react";
+import PDFTable from "@/components/system/PDFTable";
 
 import {
   Form,
@@ -18,99 +18,99 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage
-} from '@/components/ui/form'
+  FormMessage,
+} from "@/components/ui/form";
 
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
-} from '@/components/ui/select'
-import { useForm } from 'react-hook-form'
-import { useEffect, useState } from 'react'
-import { useSession } from 'next-auth/react'
-import { Hoa, Property } from '@prisma/client'
-import { Button, ButtonGroup } from '@chakra-ui/react'
-import { VscRefresh as Refresh } from 'react-icons/vsc'
-import GeneratePDFButton from '@/components/system/GeneratePDFButton'
+  SelectValue,
+} from "@/components/ui/select";
+import { useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { Hoa, Property } from "@prisma/client";
+import { Button, ButtonGroup } from "@chakra-ui/react";
+import { VscRefresh as Refresh } from "react-icons/vsc";
+import GeneratePDFButton from "@/components/system/GeneratePDFButton";
 
 interface HomeownersClientProps {
-  data: HomeownerColumn[]
-  properties: Property[]
-  hoaInfo: Hoa
+  data: HomeownerColumn[];
+  properties: Property[];
+  hoaInfo: Hoa;
 }
 const SelectSchema = z.object({
-  address: z.string()
-})
+  address: z.string(),
+});
 
 interface TableColumn {
-  header: string
-  accessor: string
+  header: string;
+  accessor: string;
 }
 
 export const HomeownersClient: React.FC<HomeownersClientProps> = ({
   data,
   properties,
-  hoaInfo
+  hoaInfo,
 }) => {
   // Page Title and Description
-  const pageTitle = `Homeowners (${data.length})`
-  const pageDescription = `Manage all registered system users in the Homeowners' Association.`
+  const pageTitle = `Homeowners (${data.length})`;
+  const pageDescription = `Manage all registered system users in the Homeowners' Association.`;
 
   // Report Title and Description
-  const reportTitle = `Homeowners Directory`
-  const reportSubtitle = `The consolidated list of registered system users in the Homeowners' Association.`
+  const reportTitle = `Homeowners Directory`;
+  const reportSubtitle = `The consolidated list of registered system users in the Homeowners' Association.`;
 
   // Report Table Columns in Generate PDF
   const reportTableColumns = [
-    { header: 'Status', accessor: 'status' },
-    { header: 'Position', accessor: 'position' },
-    { header: 'Committee', accessor: 'committee' },
-    { header: 'Name', accessor: 'name' },
-    { header: 'Email', accessor: 'email' }
-  ]
+    { header: "Status", accessor: "status" },
+    { header: "Position", accessor: "position" },
+    { header: "Committee", accessor: "committee" },
+    { header: "Name", accessor: "name" },
+    { header: "Email", accessor: "email" },
+  ];
 
-  const { update } = useSession()
+  const { update } = useSession();
 
   const sortDataByPosition = (data: HomeownerColumn[]) => {
     return [...data].sort((a, b) => {
       // Prioritize any position not "Member" to appear first
-      if (a.position !== 'Member' && b.position === 'Member') return -1
-      if (a.position === 'Member' && b.position !== 'Member') return 1
+      if (a.position !== "Member" && b.position === "Member") return -1;
+      if (a.position === "Member" && b.position !== "Member") return 1;
       // Further sorting logic if needed, e.g., alphabetically by position
-      return a.position.localeCompare(b.position)
-    })
-  }
+      return a.position.localeCompare(b.position);
+    });
+  };
 
   const [occupants, setOccupants] = useState<HomeownerColumn[]>(() =>
     sortDataByPosition(data)
-  )
+  );
 
   const form = useForm<z.infer<typeof SelectSchema>>({
     defaultValues: {
-      address: ''
-    }
-  })
+      address: "",
+    },
+  });
+  const address = form.watch("address");
 
   useEffect(() => {
-    const address = form.watch('address')
     if (address) {
-      properties.filter(property => {
+      properties.filter((property) => {
         if (property.id === address) {
           const houseMembers = data.filter(
-            dataItem => property.id === dataItem?.address
-          )
-          const sortedMembers = sortDataByPosition(houseMembers)
-          setOccupants(sortedMembers)
+            (dataItem) => property.id === dataItem?.address
+          );
+          const sortedMembers = sortDataByPosition(houseMembers);
+          setOccupants(sortedMembers);
         }
-      })
+      });
     } else {
       // Apply sorting whenever the address selection is cleared or data changes
-      setOccupants(sortDataByPosition(data))
+      setOccupants(sortDataByPosition(data));
     }
-  }, [form.watch('address'), data, properties])
+  }, [address, data, properties]);
 
   return (
     <>
@@ -136,35 +136,35 @@ export const HomeownersClient: React.FC<HomeownersClientProps> = ({
         <form>
           <FormField
             control={form.control}
-            name='address'
+            name="address"
             render={({ field }) => (
-              <FormItem className='w-3/5 mb-5'>
-                <FormLabel className='font-semibold'>Homeowners of:</FormLabel>
-                <div className='flex'>
+              <FormItem className="w-3/5 mb-5">
+                <FormLabel className="font-semibold">Homeowners of:</FormLabel>
+                <div className="flex">
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder='Please select a house address...' />
+                        <SelectValue placeholder="Please select a house address..." />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {properties.map(property => {
+                      {properties.map((property) => {
                         return (
                           <SelectItem
                             key={property.id}
-                            value={property.id || ''}
+                            value={property.id || ""}
                           >
                             {property.address}
                           </SelectItem>
-                        )
+                        );
                       })}
                     </SelectContent>
                   </Select>
-                  <Button variant='outline' onClick={() => form.reset()} ml={2}>
-                    <Refresh fontSize='xl' />
+                  <Button variant="outline" onClick={() => form.reset()} ml={2}>
+                    <Refresh fontSize="xl" />
                   </Button>
                 </div>
                 <FormMessage />
@@ -177,10 +177,10 @@ export const HomeownersClient: React.FC<HomeownersClientProps> = ({
       {/* Data Table */}
       <DataTable
         columns={columns}
-        data={form.watch('address') !== '' ? occupants : data}
-        searchKey='name'
-        height='44vh'
+        data={form.watch("address") !== "" ? occupants : data}
+        searchKey="name"
+        height="44vh"
       />
     </>
-  )
-}
+  );
+};

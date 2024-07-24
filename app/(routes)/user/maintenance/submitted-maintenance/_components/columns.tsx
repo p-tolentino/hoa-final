@@ -44,34 +44,45 @@ export const columns: ColumnDef<SubmittedMaintenanceColumn>[] = [
       )
     },
     cell: ({ row }) => (
-      <Badge
-        className={cn(
-          'w-[200px] md:text-xs p-2 ml-3 text-center justify-center break-text',
-          row.getValue('status') === 'For Review'
-            ? 'bg-yellow-700'
-            : row.getValue('status') === 'For Assignment'
-            ? 'bg-yellow-800'
-            : row.getValue('status') === 'Pending Maintenance Notice'
-            ? 'bg-orange-800'
-            : row.getValue('status') === 'Maintenance in Progress'
-            ? 'bg-blue-900'
-            : row.getValue('status') === 'For Final Report'
-            ? 'bg-violet-500'
-            : row.getValue('status') === 'Closed' &&
-              row.original.reasonToClose === 'Cancelled'
-            ? ''
-            : row.getValue('status') === 'Completed'
-            ? 'bg-green-700'
-            : row.getValue('status') === 'Closed' &&
-              row.original.reasonToClose ===
-                ('Insufficient Evidence' || 'Duplicate Submission')
-            ? 'bg-red-800'
-            : ''
-        )}
-      >
-        {row.getValue('status')}{' '}
-        {row.original.reasonToClose && `- ${row.original.reasonToClose}`}
-      </Badge>
+      <>
+        <Badge
+          className={cn(
+            'w-[200px] md:text-xs p-2 ml-3 text-center justify-center break-text',
+            row.getValue('status') === 'For Review'
+              ? 'bg-yellow-700'
+              : row.getValue('status') === 'For Assignment'
+              ? 'bg-yellow-800'
+              : row.getValue('status') === 'Pending Maintenance Notice'
+              ? 'bg-orange-800'
+              : row.getValue('status') === 'Maintenance in Progress'
+              ? 'bg-blue-900'
+              : row.getValue('status') === 'For Final Report'
+              ? 'bg-violet-500'
+              : row.getValue('status') === 'Closed' &&
+                row.original.reasonToClose === 'Cancelled'
+              ? ''
+              : row.getValue('status') === 'Completed'
+              ? 'bg-green-700'
+              : row.getValue('status') === 'Closed' &&
+                row.original.reasonToClose ===
+                  ('Insufficient Evidence' || 'Duplicate Submission')
+              ? 'bg-red-800'
+              : ''
+          )}
+        >
+          {row.getValue('status')}
+        </Badge>
+        <Text
+          fontStyle='italic'
+          fontSize='xs'
+          w='180px'
+          lineHeight={1}
+          mt={1}
+          textAlign='center'
+        >
+          {row.original.reasonToClose && `${row.original.reasonToClose}`}
+        </Text>
+      </>
     )
   },
   {

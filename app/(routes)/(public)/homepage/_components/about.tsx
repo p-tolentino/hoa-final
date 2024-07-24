@@ -1,38 +1,38 @@
-'use client'
+"use client";
 
-import { Text, Heading, Stack, Wrap, WrapItem } from '@chakra-ui/react'
-import { TbCurrencyPeso } from 'react-icons/tb'
-import { FiBriefcase, FiCalendar, FiUserCheck, FiUsers } from 'react-icons/fi'
-import { PiBinocularsBold, PiBroomFill } from 'react-icons/pi'
-import { BsNewspaper } from 'react-icons/bs'
+import { Text, Heading, Stack, Wrap, WrapItem } from "@chakra-ui/react";
+import { TbCurrencyPeso } from "react-icons/tb";
+import { FiBriefcase, FiCalendar, FiUserCheck, FiUsers } from "react-icons/fi";
+import { PiBinocularsBold, PiBroomFill } from "react-icons/pi";
+import { BsNewspaper } from "react-icons/bs";
 
 export const About = () => {
   return (
-    <Wrap spacing='30px' justify='center' mt='2rem'>
+    <Wrap spacing="30px" justify="center" mt="2rem">
       <WrapItem
-        w={{ sm: '80vw', md: '40vw', lg: '22vw' }}
-        h={{ sm: '35vh', md: '55vh', lg: '60vh', xl: '50vh' }}
+        w={{ sm: "80vw", md: "40vw", lg: "22vw" }}
+        h={{ sm: "35vh", md: "55vh", lg: "60vh", xl: "50vh" }}
       >
         <Stack
-          direction={'column'}
-          borderRadius={'1rem'}
-          borderColor={'grey.05'}
-          borderWidth={'2px'}
-          p='1rem 1rem 1.5rem 1rem'
-          alignItems={'center'}
-          textAlign={'center'}
-          h='100%'
+          direction={"column"}
+          borderRadius={"1rem"}
+          borderColor={"grey.05"}
+          borderWidth={"2px"}
+          p="1rem 1rem 1.5rem 1rem"
+          alignItems={"center"}
+          textAlign={"center"}
+          h="100%"
         >
-          <FiUserCheck size='25%' color='#355E3B' />
-          <Heading size='sm' fontFamily='font.heading'>
+          <FiUserCheck size="25%" color="#355E3B" />
+          <Heading size="sm" fontFamily="font.heading">
             Membership
           </Heading>
           <Text
-            fontSize={'14px'}
-            fontFamily='font.body'
-            textAlign='justify'
-            pr='10px'
-            pl='10px'
+            fontSize={"14px"}
+            fontFamily="font.body"
+            textAlign="justify"
+            pr="10px"
+            pl="10px"
           >
             Membership aims to provide a centralized repository for the board
             members and officers to store and monitor essential homeowner
@@ -43,30 +43,30 @@ export const About = () => {
         </Stack>
       </WrapItem>
       <WrapItem
-        w={{ sm: '80vw', md: '40vw', lg: '22vw' }}
-        h={{ sm: '35vh', md: '55vh', lg: '60vh', xl: '50vh' }}
+        w={{ sm: "80vw", md: "40vw", lg: "22vw" }}
+        h={{ sm: "35vh", md: "55vh", lg: "60vh", xl: "50vh" }}
       >
         <Stack
-          direction={'column'}
-          minW='20vw'
-          borderRadius={'1rem'}
-          borderColor={'grey.05'}
-          borderWidth={'2px'}
-          p='1rem 1rem 1.5rem 1rem'
-          alignItems={'center'}
-          textAlign={'center'}
-          h='100%'
+          direction={"column"}
+          minW="20vw"
+          borderRadius={"1rem"}
+          borderColor={"grey.05"}
+          borderWidth={"2px"}
+          p="1rem 1rem 1.5rem 1rem"
+          alignItems={"center"}
+          textAlign={"center"}
+          h="100%"
         >
-          <TbCurrencyPeso size='25%' color='#355E3B' />
-          <Heading size='sm' fontFamily='font.heading'>
+          <TbCurrencyPeso size="25%" color="#355E3B" />
+          <Heading size="sm" fontFamily="font.heading">
             Finance Management
           </Heading>
           <Text
-            fontSize={'14px'}
-            fontFamily='font.body'
-            textAlign='justify'
-            pr='10px'
-            pl='10px'
+            fontSize={"14px"}
+            fontFamily="font.body"
+            textAlign="justify"
+            pr="10px"
+            pl="10px"
           >
             Finance Management streamlines the financial processes of due
             collection and tracking, simple accounting, budget planning, reserve
@@ -78,30 +78,30 @@ export const About = () => {
         </Stack>
       </WrapItem>
       <WrapItem
-        w={{ sm: '80vw', md: '40vw', lg: '22vw' }}
-        h={{ sm: '35vh', md: '55vh', lg: '60vh', xl: '50vh' }}
+        w={{ sm: "80vw", md: "40vw", lg: "22vw" }}
+        h={{ sm: "35vh", md: "55vh", lg: "60vh", xl: "50vh" }}
       >
         <Stack
-          direction={'column'}
-          minW='20vw'
-          borderRadius={'1rem'}
-          borderColor={'grey.05'}
-          borderWidth={'2px'}
-          p='1rem 1rem 1.5rem 1rem'
-          alignItems={'center'}
-          textAlign={'center'}
-          h='100%'
+          direction={"column"}
+          minW="20vw"
+          borderRadius={"1rem"}
+          borderColor={"grey.05"}
+          borderWidth={"2px"}
+          p="1rem 1rem 1.5rem 1rem"
+          alignItems={"center"}
+          textAlign={"center"}
+          h="100%"
         >
-          <FiUsers size='25%' color='#355E3B' />
-          <Heading size='sm' fontFamily='font.heading'>
+          <FiUsers size="25%" color="#355E3B" />
+          <Heading size="sm" fontFamily="font.heading">
             Community Engagement
           </Heading>
           <Text
-            fontSize={'14px'}
-            fontFamily='font.body'
-            textAlign='justify'
-            pr='10px'
-            pl='10px'
+            fontSize={"14px"}
+            fontFamily="font.body"
+            textAlign="justify"
+            pr="10px"
+            pl="10px"
           >
             Community Engagement aims to provide a platform for the
             dissemination of crucial information, such as meeting details,
@@ -112,30 +112,30 @@ export const About = () => {
         </Stack>
       </WrapItem>
       <WrapItem
-        w={{ sm: '80vw', md: '40vw', lg: '22vw' }}
-        h={{ sm: '35vh', md: '55vh', lg: '60vh', xl: '50vh' }}
+        w={{ sm: "80vw", md: "40vw", lg: "22vw" }}
+        h={{ sm: "35vh", md: "55vh", lg: "60vh", xl: "50vh" }}
       >
         <Stack
-          direction={'column'}
-          minW='20vw'
-          borderRadius={'1rem'}
-          borderColor={'grey.05'}
-          borderWidth={'2px'}
-          p='1rem 1rem 1.5rem 1rem'
-          alignItems={'center'}
-          textAlign={'center'}
-          h='100%'
+          direction={"column"}
+          minW="20vw"
+          borderRadius={"1rem"}
+          borderColor={"grey.05"}
+          borderWidth={"2px"}
+          p="1rem 1rem 1.5rem 1rem"
+          alignItems={"center"}
+          textAlign={"center"}
+          h="100%"
         >
-          <FiBriefcase size='25%' color='#355E3B' />
-          <Heading size='sm' fontFamily='font.heading'>
+          <FiBriefcase size="25%" color="#355E3B" />
+          <Heading size="sm" fontFamily="font.heading">
             Dispute Resolution
           </Heading>
           <Text
-            fontSize={'14px'}
-            fontFamily='font.body'
-            textAlign='justify'
-            pr='10px'
-            pl='10px'
+            fontSize={"14px"}
+            fontFamily="font.body"
+            textAlign="justify"
+            pr="10px"
+            pl="10px"
           >
             Dispute Resolution aims to streamline a structured process of
             tracking and resolving disputes, providing a centralized platform
@@ -146,64 +146,65 @@ export const About = () => {
         </Stack>
       </WrapItem>
       <WrapItem
-        w={{ sm: '80vw', md: '40vw', lg: '22vw' }}
-        h={{ sm: '35vh', md: '55vh', lg: '60vh', xl: '50vh' }}
+        w={{ sm: "80vw", md: "40vw", lg: "22vw" }}
+        h={{ sm: "35vh", md: "55vh", lg: "60vh", xl: "50vh" }}
       >
         <Stack
-          direction={'column'}
-          minW='20vw'
-          borderRadius={'1rem'}
-          borderColor={'grey.05'}
-          borderWidth={'2px'}
-          p='1rem 1rem 1.5rem 1rem'
-          alignItems={'center'}
-          textAlign={'center'}
-          h='100%'
+          direction={"column"}
+          minW="20vw"
+          borderRadius={"1rem"}
+          borderColor={"grey.05"}
+          borderWidth={"2px"}
+          p="1rem 1rem 1.5rem 1rem"
+          alignItems={"center"}
+          textAlign={"center"}
+          h="100%"
         >
-          <PiBinocularsBold size='25%' color='#355E3B' />
-          <Heading size='sm' fontFamily='font.heading'>
+          <PiBinocularsBold size="25%" color="#355E3B" />
+          <Heading size="sm" fontFamily="font.heading">
             Violation Monitoring
           </Heading>
           <Text
-            fontSize={'14px'}
-            fontFamily='font.body'
-            textAlign='justify'
-            pr='10px'
-            pl='10px'
+            fontSize={"14px"}
+            fontFamily="font.body"
+            textAlign="justify"
+            pr="10px"
+            pl="10px"
           >
             Violation Monitoring aims to establish a systematic and transparent
             process for tracking, managing, and addressing violations within the
             community. This involves enforcing the stipulated penalty fees as
-            outlined in the registered homeowners' association bylaws, ensuring
-            consistent enforcement of community policies and regulations.
+            outlined in the registered homeowners&apos; association bylaws,
+            ensuring consistent enforcement of community policies and
+            regulations.
           </Text>
         </Stack>
       </WrapItem>
       <WrapItem
-        w={{ sm: '80vw', md: '40vw', lg: '22vw' }}
-        h={{ sm: '35vh', md: '55vh', lg: '60vh', xl: '50vh' }}
+        w={{ sm: "80vw", md: "40vw", lg: "22vw" }}
+        h={{ sm: "35vh", md: "55vh", lg: "60vh", xl: "50vh" }}
       >
         <Stack
-          direction={'column'}
-          minW='20vw'
-          borderRadius={'1rem'}
-          borderColor={'grey.05'}
-          borderWidth={'2px'}
-          p='1rem 1rem 1.5rem 1rem'
-          alignItems={'center'}
-          textAlign={'center'}
-          h='100%'
+          direction={"column"}
+          minW="20vw"
+          borderRadius={"1rem"}
+          borderColor={"grey.05"}
+          borderWidth={"2px"}
+          p="1rem 1rem 1.5rem 1rem"
+          alignItems={"center"}
+          textAlign={"center"}
+          h="100%"
         >
-          <FiCalendar size='25%' color='#355E3B' />
-          <Heading size='sm' fontFamily='font.heading'>
+          <FiCalendar size="25%" color="#355E3B" />
+          <Heading size="sm" fontFamily="font.heading">
             Facility Reservation
           </Heading>
           <Text
-            fontSize={'14px'}
-            fontFamily='font.body'
-            textAlign='justify'
-            pr='10px'
-            pl='10px'
+            fontSize={"14px"}
+            fontFamily="font.body"
+            textAlign="justify"
+            pr="10px"
+            pl="10px"
           >
             Facility Reservation streamlines and enhances the process of
             reserving community facilities within Homeowners Associations. It
@@ -213,30 +214,30 @@ export const About = () => {
         </Stack>
       </WrapItem>
       <WrapItem
-        w={{ sm: '80vw', md: '40vw', lg: '22vw' }}
-        h={{ sm: '35vh', md: '55vh', lg: '60vh', xl: '50vh' }}
+        w={{ sm: "80vw", md: "40vw", lg: "22vw" }}
+        h={{ sm: "35vh", md: "55vh", lg: "60vh", xl: "50vh" }}
       >
         <Stack
-          direction={'column'}
-          minW='20vw'
-          borderRadius={'1rem'}
-          borderColor={'grey.05'}
-          borderWidth={'2px'}
-          p='1rem 1rem 1.5rem 1rem'
-          alignItems={'center'}
-          textAlign={'center'}
-          h='100%'
+          direction={"column"}
+          minW="20vw"
+          borderRadius={"1rem"}
+          borderColor={"grey.05"}
+          borderWidth={"2px"}
+          p="1rem 1rem 1.5rem 1rem"
+          alignItems={"center"}
+          textAlign={"center"}
+          h="100%"
         >
-          <BsNewspaper size='25%' color='#355E3B' />
-          <Heading size='sm' fontFamily='font.heading'>
+          <BsNewspaper size="25%" color="#355E3B" />
+          <Heading size="sm" fontFamily="font.heading">
             Election Management
           </Heading>
           <Text
-            fontSize={'14px'}
-            fontFamily='font.body'
-            textAlign='justify'
-            pr='10px'
-            pl='10px'
+            fontSize={"14px"}
+            fontFamily="font.body"
+            textAlign="justify"
+            pr="10px"
+            pl="10px"
           >
             Election Management introduces an online voting platform, allowing
             homeowners to nominate and vote for potential candidates. It allows
@@ -246,5 +247,5 @@ export const About = () => {
         </Stack>
       </WrapItem>
     </Wrap>
-  )
-}
+  );
+};

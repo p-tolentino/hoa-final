@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import {
   Dialog,
@@ -7,17 +7,17 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger
-} from '@/components/ui/dialog'
-import { db } from '@/lib/db'
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { db } from "@/lib/db";
 import {
   createTransaction,
-  updateFunds
-} from '@/server/actions/hoa-transaction'
-import { updateMaintenanceRequest } from '@/server/actions/maintenance-request'
-import { createNotification } from '@/server/actions/notification'
-import { newUserTransaction } from '@/server/actions/user-transactions'
-import { getSoaByDate } from '@/server/data/soa'
+  updateFunds,
+} from "@/server/actions/hoa-transaction";
+import { updateMaintenanceRequest } from "@/server/actions/maintenance-request";
+import { createNotification } from "@/server/actions/notification";
+import { newUserTransaction } from "@/server/actions/user-transactions";
+import { getSoaByDate } from "@/server/data/soa";
 import {
   Box,
   Button,
@@ -28,79 +28,79 @@ import {
   Stack,
   Text,
   Textarea,
-  useToast
-} from '@chakra-ui/react'
-import { HoaTransactionType, PersonalInfo } from '@prisma/client'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+  useToast,
+} from "@chakra-ui/react";
+import { HoaTransactionType, PersonalInfo } from "@prisma/client";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
-export default function WriteFinalReport ({
-  reportDetails
+export default function WriteFinalReport({
+  reportDetails,
 }: {
-  reportDetails: any
+  reportDetails: any;
 }) {
-  const [isOpen, setIsOpen] = useState(false) // Dialog open state
-  const [selectedOption, setSelectedOption] = useState('')
-  const [feeToIncur, setFeeToIncur] = useState('N/A')
-  const [finalReport, setFinalReport] = useState('')
-  const [isButtonClicked, setIsButtonClicked] = useState(false)
+  const [isOpen, setIsOpen] = useState(false); // Dialog open state
+  const [selectedOption, setSelectedOption] = useState("");
+  const [feeToIncur, setFeeToIncur] = useState("N/A");
+  const [finalReport, setFinalReport] = useState("");
+  const [isButtonClicked, setIsButtonClicked] = useState(false);
 
-  const router = useRouter()
-  const toast = useToast()
+  const router = useRouter();
+  const toast = useToast();
 
   const handleRadioChange = (value: string) => {
-    setSelectedOption(value)
-  }
+    setSelectedOption(value);
+  };
 
   const onSubmit = async () => {
-    setIsButtonClicked(true)
-    const now = new Date()
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+    setIsButtonClicked(true);
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
     const formData = {
       finalReview: finalReport,
-      status: 'Completed',
+      status: "Completed",
       feeToIncur: feeToIncur,
-      finalReviewDate: new Date()
-    }
+      finalReviewDate: new Date(),
+    };
 
     await updateMaintenanceRequest(reportDetails.maintenance.id, formData).then(
-      data => {
-        console.log(data.success)
+      (data) => {
+        console.log(data.success);
         toast({
           title: `Maintenance ticket marked as COMPLETE`,
           description: `Maintenance Ticket  No.: #M${reportDetails.maintenance.number
             .toString()
-            .padStart(4, '0')}`,
-          status: 'success',
-          position: 'bottom-right',
-          isClosable: true
-        })
+            .padStart(4, "0")}`,
+          status: "success",
+          position: "bottom-right",
+          isClosable: true,
+        });
       }
-    )
+    );
 
-    if (feeToIncur !== 'N/A') {
+    if (feeToIncur !== "N/A") {
       const feeData = {
         type: HoaTransactionType.EXPENSE,
-        purpose: 'Repair and Maintenance',
+        purpose: "Repair and Maintenance",
         description: reportDetails.maintenanceType.title,
         amount: feeToIncur,
-        dateIssued: new Date().toLocaleDateString()
-      }
+        dateIssued: new Date().toLocaleDateString(),
+      };
 
-      await createTransaction(feeData).then(async data => {
+      await createTransaction(feeData).then(async (data) => {
         if (data.success) {
-          console.log(data.success)
-          const hoa = await db.hoa.findFirst()
+          console.log(data.success);
+          const hoa = await db.hoa.findFirst();
           await updateFunds(hoa!!.funds - parseInt(feeToIncur, 10)).then(
-            data => {
+            (data) => {
               if (data.success) {
-                console.log(data.success)
+                console.log(data.success);
               }
             }
-          )
+          );
         }
-      })
+      });
 
       // // Send Notifications
       // const notifPaymentData = {
@@ -118,18 +118,18 @@ export default function WriteFinalReport ({
       // });
     }
 
-    setIsOpen(false)
-    router.refresh()
+    setIsOpen(false);
+    router.refresh();
     router.push(
       `/user/maintenance/maintenance-record/view-progress/${reportDetails.maintenance.id}`
-    )
-    window.location.reload()
-  }
+    );
+    window.location.reload();
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button size='sm' colorScheme='yellow'>
+        <Button size="sm" colorScheme="yellow">
           Write Final Report
         </Button>
       </DialogTrigger>
@@ -143,41 +143,42 @@ export default function WriteFinalReport ({
             </DialogDescription>
           </DialogHeader>
           {/* Form Content */}
-          <Stack spacing='15px' my='1.5rem'>
+          <Stack spacing="15px" my="1.5rem">
             <Stack>
-              <Text fontSize='sm' fontFamily='font.body'>
-                What is the committee's final verdict for this maintenance case?
+              <Text fontSize="sm" fontFamily="font.body">
+                What is the committee&apos;s final verdict for this maintenance
+                case?
               </Text>
               <RadioGroup
-                defaultValue=''
-                size='sm'
+                defaultValue=""
+                size="sm"
                 value={selectedOption}
                 onChange={handleRadioChange}
               >
                 <Stack
-                  direction='column'
-                  fontFamily='font.body'
-                  textAlign='justify'
+                  direction="column"
+                  fontFamily="font.body"
+                  textAlign="justify"
                 >
                   <Box
-                    pl='0.5rem'
-                    bg={selectedOption === 'COMPLETED' ? 'yellow.100' : ''}
+                    pl="0.5rem"
+                    bg={selectedOption === "COMPLETED" ? "yellow.100" : ""}
                   >
-                    <Radio value='COMPLETED' colorScheme='yellow'>
-                      The maintenance ticket has been officially{' '}
-                      <span className='font-bold'>COMPLETED</span>.
+                    <Radio value="COMPLETED" colorScheme="yellow">
+                      The maintenance ticket has been officially{" "}
+                      <span className="font-bold">COMPLETED</span>.
                     </Radio>
                   </Box>
                   <Box
-                    pl='0.5rem'
-                    bg={selectedOption === 'COMPLETED_FEE' ? 'orange.100' : ''}
+                    pl="0.5rem"
+                    bg={selectedOption === "COMPLETED_FEE" ? "orange.100" : ""}
                   >
-                    <Radio value='COMPLETED_FEE' colorScheme='red'>
-                      The maintenance ticket has been officially{' '}
-                      <span className='font-bold'>COMPLETED</span> with an{' '}
-                      <span className='font-semibold text-orange-700'>
+                    <Radio value="COMPLETED_FEE" colorScheme="red">
+                      The maintenance ticket has been officially{" "}
+                      <span className="font-bold">COMPLETED</span> with an{" "}
+                      <span className="font-semibold text-orange-700">
                         external fee incurred
-                      </span>{' '}
+                      </span>{" "}
                       to accomplish the maintenance service.
                     </Radio>
                   </Box>
@@ -185,48 +186,48 @@ export default function WriteFinalReport ({
               </RadioGroup>
             </Stack>
             <Stack>
-              {selectedOption === 'COMPLETED_FEE' && (
+              {selectedOption === "COMPLETED_FEE" && (
                 <Flex
                   gap={2}
-                  fontFamily='font.body'
-                  fontSize='sm'
-                  align='center'
-                  justifyContent='center'
+                  fontFamily="font.body"
+                  fontSize="sm"
+                  align="center"
+                  justifyContent="center"
                   mt={2}
                 >
                   <Text>External Maintenance Fee:</Text>
                   <Box>
                     <span>₱ </span>
                     <Input
-                      type='number'
-                      textAlign='right'
-                      w='8rem'
-                      size='sm'
-                      placeholder='XXX'
-                      onChange={e => setFeeToIncur(e.target.value)}
+                      type="number"
+                      textAlign="right"
+                      w="8rem"
+                      size="sm"
+                      placeholder="XXX"
+                      onChange={(e) => setFeeToIncur(e.target.value)}
                     />
                   </Box>
                 </Flex>
               )}
               <Textarea
-                fontSize='sm'
-                fontFamily='font.body'
+                fontSize="sm"
+                fontFamily="font.body"
                 placeholder={
-                  'Write the final report for this maintenance ticket...'
+                  "Write the final report for this maintenance ticket..."
                 }
-                height='10vh'
-                resize='none'
-                onChange={e => setFinalReport(e.target.value)}
+                height="10vh"
+                resize="none"
+                onChange={(e) => setFinalReport(e.target.value)}
               />
             </Stack>
           </Stack>
           <DialogFooter>
             <Button
-              size='sm'
-              colorScheme='yellow'
-              type='button'
+              size="sm"
+              colorScheme="yellow"
+              type="button"
               isLoading={isButtonClicked}
-              loadingText='Submitting'
+              loadingText="Submitting"
               onClick={() => onSubmit()}
             >
               Submit Final Report and Mark Ticket as Complete
@@ -235,5 +236,5 @@ export default function WriteFinalReport ({
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

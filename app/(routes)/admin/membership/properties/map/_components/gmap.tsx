@@ -78,14 +78,17 @@ const GMapView: React.FC<GMapViewProps> = ({
     if (propCenter) {
       setCenter(propCenter);
     }
-  }, [selectedProperty]);
+  }, [initialCenter.lat, initialCenter.lng, properties, selectedProperty]);
 
-  const onLoad = useCallback(function callback(map: any) {
-    const bounds = new window.google.maps.LatLngBounds(center);
-    map.fitBounds(bounds);
+  const onLoad = useCallback(
+    function callback(map: any) {
+      const bounds = new window.google.maps.LatLngBounds(center);
+      map.fitBounds(bounds);
 
-    setMap(map);
-  }, []);
+      setMap(map);
+    },
+    [center]
+  );
 
   const onUnmount = useCallback(function callback(map: any) {
     setMap(null);

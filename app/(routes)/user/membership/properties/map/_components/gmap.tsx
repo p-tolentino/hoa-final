@@ -4,7 +4,7 @@ import { useCurrentUser } from "@/hooks/use-current-user";
 import { ExtendedUser } from "@/next-auth";
 import { Property } from "@prisma/client";
 import { GoogleMap, useJsApiLoader, Marker } from "@react-google-maps/api";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 
 const customSize = {
   width: 50,
@@ -50,10 +50,13 @@ const GMapView: React.FC<GMapViewProps> = ({
     (property) => property.id === user?.info.address
   );
 
-  const userPropertyCenter = {
-    lat: userProperty?.latitude!!,
-    lng: userProperty?.longitude!!,
-  };
+  const userPropertyCenter = useMemo(
+    () => ({
+      lat: userProperty?.latitude!!,
+      lng: userProperty?.longitude!!,
+    }),
+    [userProperty]
+  );
 
   const containerStyle = {
     width: "100%",
@@ -90,14 +93,24 @@ const GMapView: React.FC<GMapViewProps> = ({
     if (userProperty && !selected) {
       setCenter(userPropertyCenter);
     }
-  }, [selectedProperty]);
+  }, [
+    initialCenter.lat,
+    initialCenter.lng,
+    properties,
+    userProperty,
+    userPropertyCenter,
+    selectedProperty,
+  ]);
 
-  const onLoad = useCallback(function callback(map: any) {
-    const bounds = new window.google.maps.LatLngBounds(center);
-    map.fitBounds(bounds);
+  const onLoad = useCallback(
+    function callback(map: any) {
+      const bounds = new window.google.maps.LatLngBounds(center);
+      map.fitBounds(bounds);
 
-    setMap(map);
-  }, []);
+      setMap(map);
+    },
+    [center]
+  );
 
   const onUnmount = useCallback(function callback(map: any) {
     setMap(null);

@@ -42,7 +42,7 @@ export default function ViolationBylaws({ hoa }: { hoa: Hoa }) {
         size="sm"
         textDecoration="underline"
       >
-        Homeowners' Association Bylaws
+        Homeowners&apos; Association Bylaws
       </Link>
 
       <Drawer isOpen={isOpen} onClose={onClose} placement="right" size="xl">

@@ -309,7 +309,7 @@ function CreateHoa({ hoa }: { hoa: Hoa | null | undefined }) {
             <Stack spacing={1} w="90%">
               <HStack gap={5}>
                 <Text fontSize="sm" fontWeight="semibold">
-                  Upload Homeowners' Association Bylaws:
+                  Upload Homeowners&apos; Association Bylaws:
                 </Text>
                 <Dialog>
                   <DialogTrigger asChild>
@@ -328,11 +328,11 @@ function CreateHoa({ hoa }: { hoa: Hoa | null | undefined }) {
                   <DialogContent>
                     <DialogHeader>
                       <DialogTitle>
-                        Upload Homeowners' Association Bylaws
+                        Upload Homeowners&apos; Association Bylaws
                       </DialogTitle>
                       <DialogDescription>
-                        "Upload the latest Homeowners' Association Bylaws for
-                        members to view."
+                        &quot;Upload the latest Homeowners&apos; Association
+                        Bylaws for members to view.&quot;
                       </DialogDescription>
                     </DialogHeader>
                     {/* File input */}

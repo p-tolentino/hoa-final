@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import {
   Stack,
@@ -9,133 +9,134 @@ import {
   Button,
   HStack,
   Flex,
-  useToast
-} from '@chakra-ui/react'
+  useToast,
+} from "@chakra-ui/react";
 
-import React, { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { ElectionSettings, Candidates, VoteResponse } from '@prisma/client'
-import ViewInfo from './view-info'
-import { createElectionVote } from '@/server/actions/election-vote'
-import { useCurrentUser } from '@/hooks/use-current-user'
-import { format } from 'date-fns'
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { ElectionSettings, Candidates, VoteResponse } from "@prisma/client";
+import ViewInfo from "./view-info";
+import { createElectionVote } from "@/server/actions/election-vote";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import { format } from "date-fns";
 
 interface ElectionVoteProps {
-  election: ElectionSettings
-  candidates: Candidates[]
-  votes: VoteResponse[]
+  election: ElectionSettings;
+  candidates: Candidates[];
+  votes: VoteResponse[];
 }
 
-function formatDate (date: string | number | Date) {
-  return new Date(date).toLocaleDateString() // Format the date as needed
+function formatDate(date: string | number | Date) {
+  return new Date(date).toLocaleDateString(); // Format the date as needed
 }
 
-export default function AnswerElection ({
+export default function AnswerElection({
   election,
   candidates,
-  votes
+  votes,
 }: ElectionVoteProps) {
-  const userInfo = useCurrentUser()
-  if (!userInfo) {
-    return null
-  }
+  const [selectedCandidates, setSelectedCandidates] = useState<string[]>([]);
+  const [isVotingPeriod, setIsVotingPeriod] = useState<boolean>(false);
+  const [hasVoted, setHasVoted] = useState<boolean>(false);
+  const router = useRouter();
+  const toast = useToast();
 
-  const [selectedCandidates, setSelectedCandidates] = useState<string[]>([])
-  const [isVotingPeriod, setIsVotingPeriod] = useState<boolean>(false)
-  const [hasVoted, setHasVoted] = useState<boolean>(false)
-  const router = useRouter()
-  const toast = useToast()
+  const userInfo = useCurrentUser();
 
   useEffect(() => {
-    const now = new Date()
-    const startElectDate = new Date(election.startElectDate)
-    const endElectDate = new Date(election.endElectDate)
+    const now = new Date();
+    const startElectDate = new Date(election.startElectDate);
+    const endElectDate = new Date(election.endElectDate);
 
-    setIsVotingPeriod(now >= startElectDate && now <= endElectDate)
+    setIsVotingPeriod(now >= startElectDate && now <= endElectDate);
 
     // Check if the user has already voted
-    const userHasVoted = votes.some(vote => vote.userId === userInfo.id)
-    setHasVoted(userHasVoted)
-  }, [election.startElectDate, election.endElectDate, votes, userInfo.id])
+    const userHasVoted = votes.some((vote) => vote.userId === userInfo?.id);
+    setHasVoted(userHasVoted);
+  }, [election.startElectDate, election.endElectDate, votes, userInfo?.id]);
 
   const handleSelectionChange = (selectedIds: string[]) => {
     if (selectedIds.length <= election.totalBoardMembers) {
-      setSelectedCandidates(selectedIds)
+      setSelectedCandidates(selectedIds);
     } else {
       alert(
         `You can only select up to ${election.totalBoardMembers} candidates.`
-      )
+      );
     }
-  }
+  };
 
   const handleSubmit = async () => {
     try {
-      const responsePromises = selectedCandidates.map(candidateId =>
+      const responsePromises = selectedCandidates.map((candidateId) =>
         createElectionVote(election.id, candidateId)
-      )
+      );
 
-      await Promise.all(responsePromises)
+      await Promise.all(responsePromises);
       toast({
         title: `Votes Submitted`,
         description: `Election Term: ${election.termOfOffice}`,
-        status: 'success',
-        position: 'bottom-right',
-        isClosable: true
-      })
-      router.push('/user/election/election-record') // Redirect to the "thank you" page upon success
+        status: "success",
+        position: "bottom-right",
+        isClosable: true,
+      });
+      router.push("/user/election/election-record"); // Redirect to the "thank you" page upon success
     } catch (error) {
-      console.error('Failed to submit votes:', error)
+      console.error("Failed to submit votes:", error);
       toast({
         title: `Votes Submission Failed`,
         description: `Election Term: ${election.termOfOffice}`,
-        status: 'error',
-        position: 'bottom-right',
-        isClosable: true
-      })
+        status: "error",
+        position: "bottom-right",
+        isClosable: true,
+      });
     }
+  };
+
+  if (!userInfo) {
+    return null;
   }
 
   return (
     <>
-      <Box w='max-content'>
-        <Stack spacing='10px'>
+      <Box w="max-content">
+        <Stack spacing="10px">
           <HStack spacing={5}>
-            <Text fontSize='sm' fontWeight='semibold'>
+            <Text fontSize="sm" fontWeight="semibold">
               Election Title:
             </Text>
-            <Text fontSize='sm'>
+            <Text fontSize="sm">
               {election.title
                 ? election.title
                 : `${election.termOfOffice} Elections`}
             </Text>
           </HStack>
           <HStack spacing={5}>
-            <Text fontSize='sm' fontWeight='semibold'>
+            <Text fontSize="sm" fontWeight="semibold">
               Voting Period
             </Text>
-            <Text fontSize='sm'>
-              {format(election.startElectDate, 'MMMM dd, yyyy')} -{' '}
-              {format(election.endElectDate, 'MMMM dd, yyyy')}
+            <Text fontSize="sm">
+              {format(election.startElectDate, "MMMM dd, yyyy")} -{" "}
+              {format(election.endElectDate, "MMMM dd, yyyy")}
             </Text>
           </HStack>
           <HStack spacing={5}>
-            <Text fontSize='sm' fontWeight='semibold'>
+            <Text fontSize="sm" fontWeight="semibold">
               Total No. of Board Members to vote:
             </Text>
-            <Text fontSize='sm'>{election.totalBoardMembers}</Text>
+            <Text fontSize="sm">{election.totalBoardMembers}</Text>
           </HStack>
           <Stack spacing={3} my={5}>
-            <Text fontSize='sm' fontWeight='semibold'>
+            <Text fontSize="sm" fontWeight="semibold">
               Please select from the list of board member candidates below:
             </Text>
             <CheckboxGroup
-              size='sm'
+              size="sm"
               value={selectedCandidates}
-              colorScheme='yellow'
+              colorScheme="yellow"
               onChange={handleSelectionChange}
             >
-              <Stack spacing={2} fontFamily='font.body' ml={3}>
-                {candidates.map(candidate => (
+              <Stack spacing={2} fontFamily="font.body" ml={3}>
+                {candidates.map((candidate) => (
                   <HStack key={candidate.id} spacing={2}>
                     <Checkbox value={candidate.id}>
                       {candidate.fullName}
@@ -150,13 +151,13 @@ export default function AnswerElection ({
       </Box>
 
       <Box my={5}>
-        <Flex justifyContent='left' w='100%' gap={3} flexDirection='column'>
+        <Flex justifyContent="left" w="100%" gap={3} flexDirection="column">
           {isVotingPeriod && !hasVoted && (
             <Button
-              size='sm'
-              colorScheme='yellow'
-              type='submit'
-              w='max-content'
+              size="sm"
+              colorScheme="yellow"
+              type="submit"
+              w="max-content"
               onClick={handleSubmit}
               disabled={!isVotingPeriod}
             >
@@ -164,13 +165,13 @@ export default function AnswerElection ({
             </Button>
           )}
           {!isVotingPeriod && (
-            <Text fontSize='sm' color='red.500' mt={2}>
+            <Text fontSize="sm" color="red.500" mt={2}>
               It is not yet the voting period.
             </Text>
           )}
           {hasVoted && (
-            <Box p='10px' mt={5}>
-              <Text fontSize='sm' fontWeight='semibold' color='red.500'>
+            <Box p="10px" mt={5}>
+              <Text fontSize="sm" fontWeight="semibold" color="red.500">
                 You have already voted in this election.
               </Text>
             </Box>
@@ -178,5 +179,5 @@ export default function AnswerElection ({
         </Flex>
       </Box>
     </>
-  )
+  );
 }

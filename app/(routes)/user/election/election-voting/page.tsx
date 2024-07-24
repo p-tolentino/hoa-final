@@ -182,7 +182,7 @@ export default async function ElectionVoting() {
         />
 
         <div className="text-center text-red-500 font-bold">
-          The voting period for this term's election has ended.
+          The voting period for this term&apos;s election has ended.
         </div>
       </>
     );
@@ -206,7 +206,7 @@ export default async function ElectionVoting() {
         />
 
         <div className="text-center text-red-500 font-bold">
-          It is not yet the voting period for this term's election. (START:{" "}
+          It is not yet the voting period for this term&apos;s election. (START:{" "}
           {existingActiveElection.startElectDate.toLocaleString()} | END:{" "}
           {existingActiveElection.endElectDate.toLocaleString()})
         </div>

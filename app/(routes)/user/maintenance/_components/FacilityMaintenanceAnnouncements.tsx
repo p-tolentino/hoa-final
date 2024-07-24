@@ -107,7 +107,7 @@ export default function FacilityMaintenanceAnnouncements({
               </Heading>
               <Text fontSize="sm" color="grey" fontWeight="normal">
                 View all maintenance activities scheduled for all facilities
-                within the Homeowners' Association.
+                within the Homeowners&apos; Association.
               </Text>
             </Stack>
           </DrawerHeader>
