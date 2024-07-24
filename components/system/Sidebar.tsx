@@ -1,202 +1,419 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 
 import {
   FiBriefcase,
   FiCalendar,
-  FiDollarSign,
   FiUserCheck,
   FiUsers,
+  FiMenu,
 } from "react-icons/fi";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { PiBinocularsBold, PiBroomFill } from "react-icons/pi";
+import { TbCurrencyPeso } from "react-icons/tb";
+import { PiBinocularsBold } from "react-icons/pi";
+import { PiBroom } from "react-icons/pi";
 import { TfiDashboard as Dashboard } from "react-icons/tfi";
 import { FaUser as User } from "react-icons/fa";
 import { RxGear as Gear, RxExit as Exit } from "react-icons/rx";
 import { BsNewspaper } from "react-icons/bs";
-import { useCurrentUser } from "@/hooks/use-current-user";
-import { Separator } from "../ui/separator";
+import { useCurrentRole } from "@/hooks/use-current-role";
 import { LogoutButton } from "../auth/logout-button";
+import { Notification, UserRole } from "@prisma/client";
+import { useState, useEffect, useTransition } from "react";
+import {
+  Flex,
+  Text,
+  IconButton,
+  Divider,
+  Avatar,
+  Heading,
+  Icon,
+  Menu,
+  MenuButton,
+  Box,
+  Stack,
+  Spinner,
+} from "@chakra-ui/react";
+import { UserButton } from "../auth/user-button";
+import NextImage from "next/image";
+import SystemLogo from "@/public/HOAs.is-logo.png";
+import NotificationCenter from "./NotifcationCenter";
+import { ExtendedUser } from "@/next-auth";
+import { currentUser } from "@/lib/auth";
 
-export function Sidebar() {
-  const user = useCurrentUser();
+export function Sidebar({
+  notifications,
+}: {
+  notifications: Notification[] | null;
+}) {
+  const roles = useCurrentRole();
   const pathname = usePathname();
+  const role = roles === UserRole.ADMIN ? "admin" : "user";
+  const [user, setUser] = useState<ExtendedUser | null | undefined>();
+  const [isPending, startTransition] = useTransition();
 
-  const sidebarRoutes = [
+  const userRoutes = [
     {
       label: "Dashboard",
-      href: `/${user?.role.toLowerCase()}`,
-      icon: <Dashboard className="w-5 h-5 mr-2" />,
-      active: pathname === `/${user?.role.toLowerCase()}`,
+      href: `/user/dashboard`,
+      icon: Dashboard,
+      active: pathname.includes(`dashboard`),
     },
     {
       label: "Membership",
-      href: `/${user?.role.toLowerCase()}/membership`,
-      icon: <FiUserCheck className="w-5 h-5 mr-2" />,
-      active: pathname === `/${user?.role.toLowerCase()}/membership"`,
+      href: `/user/membership`,
+      icon: FiUserCheck,
+      active: pathname.startsWith(`/user/membership`),
     },
     {
       label: "Finance Management",
-      href: `/${user?.role.toLowerCase()}/finance`,
-      icon: <FiDollarSign className="w-5 h-5 mr-2" />,
-      active: pathname === `/${user?.role.toLowerCase()}/finance`,
+      href: `/user/finance`,
+      icon: TbCurrencyPeso,
+      active: pathname.startsWith(`/user/finance`),
     },
     {
       label: "Community Engagement",
-      href: `/${user?.role.toLowerCase()}/community`,
-      icon: <FiUsers className="w-5 h-5 mr-2" />,
-      active: pathname === `/${user?.role.toLowerCase()}/community`,
+      href: `/user/community`,
+      icon: FiUsers,
+      active: pathname.startsWith(`/user/community`),
     },
     {
       label: "Dispute Resolution",
-      href: `/${user?.role.toLowerCase()}/disputes`,
-      icon: <FiBriefcase className="w-5 h-5 mr-2" />,
-      active: pathname === `/${user?.role.toLowerCase()}/disputes`,
+      href: `/user/disputes`,
+      icon: FiBriefcase,
+      active: pathname.startsWith(`/user/disputes`),
     },
     {
       label: "Violation Monitoring",
-      href: `/${user?.role.toLowerCase()}/violations`,
-      icon: <PiBinocularsBold className="w-5 h-5 mr-2" />,
-      active: pathname === `/${user?.role.toLowerCase()}/violations`,
+      href: `/user/violations`,
+      icon: PiBinocularsBold,
+      active: pathname.startsWith(`/user/violations`),
     },
     {
       label: "Facility Reservation",
-      href: `/${user?.role.toLowerCase()}/facility`,
-      icon: <FiCalendar className="w-5 h-5 mr-2" />,
-      active: pathname === `/${user?.role.toLowerCase()}/facility`,
+      href: `/user/facility`,
+      icon: FiCalendar,
+      active: pathname.startsWith(`/user/facility`),
     },
     {
       label: "Maintenance Handling",
-      href: `/${user?.role.toLowerCase()}/maintenance`,
-      icon: <PiBroomFill className="w-5 h-5 mr-2" />,
-      active: pathname === `/${user?.role.toLowerCase()}/maintenance`,
+      href: `/user/maintenance`,
+      icon: PiBroom,
+      active: pathname.startsWith(`/user/maintenance`),
     },
     {
       label: "Election Management",
-      href: `/${user?.role.toLowerCase()}/election`,
-      icon: <BsNewspaper className="w-5 h-5 mr-2" />,
-      active: pathname === `/${user?.role.toLowerCase()}/election`,
+      href: `/user/election`,
+      icon: BsNewspaper,
+      active: pathname.startsWith(`/user/election`),
     },
   ];
-
-  const membershipRoutes = [];
-
-  const financeRoutes = [];
-
-  const communityRoutes = [];
-
-  const disputeRoutes = [];
-
-  const violationRoutes = [];
-
-  const facilityRoutes = [];
-
-  const maintenanceRoutes = [];
-
-  const electionRoutes = [];
+  const adminRoutes = [
+    {
+      label: "Membership",
+      href: `/admin/membership`,
+      icon: FiUserCheck,
+      active: pathname.startsWith(`/admin/membership`),
+    },
+  ];
 
   const profileRoutes = [
     {
       label: "My Profile",
-      href: `/${user?.role.toLowerCase()}/profile`,
-      icon: <User className="w-5 h-5 mr-2" />,
-      active: pathname === `/${user?.role.toLowerCase()}/profile`,
+      href: `/${role}/profile`,
+      icon: User,
+      active: pathname === `/${role}/profile`,
     },
     {
       label: "Settings",
-      href: `/${user?.role.toLowerCase()}/settings`,
-      icon: <Gear className="w-5 h-5 mr-2" />,
-      active: pathname === `/${user?.role.toLowerCase()}/settings`,
+      href: `/${role}/settings`,
+      icon: Gear,
+      active: pathname === `/${role}/settings`,
     },
   ];
 
-  return (
-    <div
-      className={cn(
-        "h-full  bg-[#54865c] flex items-start space-x-4 lg:space-x-6 text-white"
-      )}
-    >
-      <div className="py-4 space-y-4">
-        <div className="px-3 py-2">
-          <h1 className="px-4 mb-2 text-lg font-semibold tracking-tight ">
-            Modules
-          </h1>
-          <div className="space-y-4">
-            {sidebarRoutes.map((route) => (
-              <Link
-                key={route.href}
-                href={route.href}
-                className={cn(
-                  "flex justify-between font-medium transition-colors hover:text-primary",
-                  route.active ? "text-black" : "text-white"
-                )}
-              >
-                <Button
-                  className={cn(
-                    "justify-start w-full mr-2",
-                    route.active
-                      ? "bg-[#F0CB5B] text-black hover:bg-[#F0CB5B]"
-                      : "bg-[#54865c] hover:bg-[#93ca9b] hover:text-black"
-                  )}
-                >
-                  {route.icon}
-                  {route.label}
-                </Button>
-              </Link>
-            ))}
-          </div>
-        </div>
+  // For responsiveness when window is resized
+  const [sidebarSize, changeSidebarSize] = useState("large");
 
-        <div className="px-3 py-[100px]">
-          <h2 className="px-4 mb-2 text-lg font-semibold tracking-tight">
-            Account
-          </h2>
-          <div className="space-y-1">
-            {profileRoutes.map((route) => (
-              <Link
-                key={route.href}
-                href={route.href}
-                className={cn(
-                  "flex justify-between font-medium transition-colors hover:text-primary",
-                  route.active ? "text-black" : "text-white"
-                )}
-              >
-                <Button
-                  className={cn(
-                    "justify-start w-full",
-                    route.active
-                      ? "bg-[#F0CB5B] text-black hover:bg-[#F0CB5B]"
-                      : "bg-[#54865c] hover:bg-[#93ca9b] hover:text-black"
-                  )}
+  useEffect(() => {
+    startTransition(() => {
+      currentUser().then((data) => {
+        if (data) {
+          setUser(data);
+        }
+      });
+    });
+    const handleResize = () => {
+      const isSmallScreen = window.innerWidth <= 768; // You can adjust the breakpoint (768) as needed
+      changeSidebarSize(isSmallScreen ? "small" : "large");
+    };
+    // Initial check on mount
+    handleResize();
+    // Event listener for window resize
+    window.addEventListener("resize", handleResize);
+    // Cleanup the event listener on component unmount
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  return (
+    <Flex
+      pos="sticky"
+      top={0}
+      h={{ sm: "97.8vh", lg: "100vh" }}
+      minW={sidebarSize === "small" ? "80px" : "250px"}
+      flexDir="column"
+      justifyContent={{ sm: "space-around", lg: "space-between" }}
+      bgColor={"brand.500"}
+      color={"white"}
+      zIndex={3}
+    >
+      <Flex
+        p={sidebarSize === "small" ? "17%" : "5%"}
+        flexDir="column"
+        w="100%"
+        alignItems={sidebarSize === "small" ? "center" : "flex-start"}
+        as="nav"
+      >
+        <Flex>
+          <Link href="/">
+            <NextImage
+              src={SystemLogo}
+              alt="HOAs.is Logo"
+              width={100}
+              height={100}
+            />
+          </Link>
+        </Flex>
+        {sidebarSize === "small" ? (
+          <Stack mr="3px" mt={3}>
+            <IconButton
+              background="none"
+              color={"white"}
+              _hover={{ background: "none" }}
+              icon={<FiMenu />}
+              onClick={() => {
+                if (sidebarSize === "small") changeSidebarSize("large");
+                else changeSidebarSize("small");
+              }}
+              aria-label={""}
+              alignSelf={"flex-start"}
+            />
+            <NotificationCenter initialData={notifications || []} />
+            <Divider />
+          </Stack>
+        ) : (
+          <Flex justify="space-between" w="100%" mt={3}>
+            <IconButton
+              background="none"
+              color={"white"}
+              _hover={{ background: "none" }}
+              icon={<FiMenu />}
+              onClick={() => {
+                if (sidebarSize === "small") changeSidebarSize("large");
+                else changeSidebarSize("small");
+              }}
+              aria-label={""}
+              alignSelf={"flex-start"}
+            />
+            <NotificationCenter initialData={notifications || []} />
+          </Flex>
+        )}
+
+        <Stack
+          spacing={sidebarSize === "small" ? "5" : "3"}
+          mt="1.4rem"
+          ml={sidebarSize === "small" ? 2 : 0}
+        >
+          {user?.role !== UserRole.ADMIN
+            ? userRoutes.map((route) => {
+                return (
+                  <Box
+                    key={route.label}
+                    alignItems={sidebarSize === "small" ? "center" : "left"}
+                    fontSize={"sm"}
+                    fontFamily={"font.body"}
+                    w={sidebarSize === "small" ? "65px" : "225px"}
+                  >
+                    <Menu placement="right" key={route.label}>
+                      <Link
+                        href={route.href}
+                        className={cn(
+                          "p-3 rounded-lg no-underline hover:bg-[#688f6e] hover:text-white transition",
+                          route.active ? "bg-[#F0CB5B]" : "bg-transparent"
+                        )}
+                      >
+                        <MenuButton w="100%">
+                          <Flex pl={sidebarSize === "small" ? "1.5" : "0"}>
+                            <Icon
+                              as={route.icon}
+                              fontSize="xl"
+                              color={route.active ? "black" : "white"}
+                              className="w-5 h-5"
+                            />
+                            <Text
+                              textAlign={"left"}
+                              ml={5}
+                              display={
+                                sidebarSize === "small" ? "none" : "flex"
+                              }
+                              color={route.active ? "black" : "white"}
+                              fontWeight={route.active ? "bold" : "normal"}
+                            >
+                              {route.label}
+                            </Text>
+                          </Flex>
+                        </MenuButton>
+                      </Link>
+                    </Menu>
+                  </Box>
+                );
+              })
+            : adminRoutes.map((route) => {
+                return (
+                  <Box
+                    key={route.label}
+                    alignItems={sidebarSize === "small" ? "center" : "left"}
+                    fontSize={"sm"}
+                    fontFamily={"font.body"}
+                    w={sidebarSize === "small" ? "65px" : "225px"}
+                  >
+                    <Menu placement="right" key={route.label}>
+                      <Link
+                        href={route.href}
+                        className={cn(
+                          "p-3 rounded-lg no-underline hover:bg-[#688f6e] hover:text-white transition",
+                          route.active ? "bg-[#F0CB5B]" : "bg-transparent"
+                        )}
+                      >
+                        <MenuButton w="100%">
+                          <Flex pl={sidebarSize === "small" ? "1.5" : "0"}>
+                            <Icon
+                              as={route.icon}
+                              fontSize="xl"
+                              color={route.active ? "black" : "white"}
+                              className="w-5 h-5"
+                            />
+                            <Text
+                              textAlign={"left"}
+                              ml={5}
+                              display={
+                                sidebarSize === "small" ? "none" : "flex"
+                              }
+                              color={route.active ? "black" : "white"}
+                              fontWeight={route.active ? "bold" : "normal"}
+                            >
+                              {route.label}
+                            </Text>
+                          </Flex>
+                        </MenuButton>
+                      </Link>
+                    </Menu>
+                  </Box>
+                );
+              })}
+        </Stack>
+      </Flex>
+
+      {sidebarSize !== "small" && (
+        <Flex
+          p="1rem"
+          flexDir="column"
+          w="100%"
+          alignItems={sidebarSize === "small" ? "center" : "flex-start"}
+          mb={4}
+        >
+          <Divider
+            display={sidebarSize === "small" ? "none" : "flex"}
+            mt={"1rem"}
+          />
+          <Flex
+            mt={4}
+            align="center"
+            display={sidebarSize === "small" ? "none" : "flex"}
+          >
+            <Avatar
+              size="sm"
+              src={user?.info.imageUrl || user?.image || ""}
+              bg="yellow.600"
+              icon={<User className="w-4 h-4" />}
+            />
+            {!isPending ? (
+              <Flex flexDir="column" ml={4}>
+                <Heading
+                  as="h3"
+                  size="sm"
+                  fontFamily="font.heading"
+                  className="capitalize"
                 >
-                  {route.icon}
-                  {route.label}
-                </Button>
-              </Link>
-            ))}
-          </div>
-          <Separator className="my-4 opacity-50" />
-          <LogoutButton>
-            <Button
-              className=" justify-start w-full bg-[#54865c] hover:bg-[#93ca9b] hover:text-black"
-              variant="ghost"
+                  {`${user?.info?.firstName || "-"} ${
+                    user?.info?.lastName || ""
+                  }`}
+                </Heading>
+                <Text color="brand.300" fontFamily="font.body">
+                  {user?.role} - {user?.info?.position}
+                </Text>
+              </Flex>
+            ) : (
+              <Spinner className="ml-4" />
+            )}
+          </Flex>
+
+          <Stack spacing={2} mt={3}>
+            <Flex
+              fontSize={"sm"}
+              display={sidebarSize === "small" ? "none" : "flex"}
             >
-              <Exit className="w-4 h-4 mr-2" />
-              Logout
-            </Button>
-          </LogoutButton>
-        </div>
-      </div>
-    </div>
+              <Text
+                as={Link}
+                href={`/${role}/profile`}
+                fontFamily="font.body"
+                _hover={{ color: "yellow.200" }}
+              >
+                My Profile
+              </Text>
+            </Flex>
+            <Flex
+              fontSize={"sm"}
+              display={sidebarSize === "small" ? "none" : "flex"}
+            >
+              <Text
+                as={Link}
+                href={`/${role}/settings`}
+                fontFamily="font.body"
+                _hover={{ color: "yellow.200" }}
+              >
+                Settings
+              </Text>
+            </Flex>
+            <Flex
+              fontSize={"sm"}
+              display={sidebarSize === "small" ? "none" : "flex"}
+            >
+              <LogoutButton>
+                <Text fontFamily="font.body" _hover={{ color: "yellow.200" }}>
+                  Log Out
+                </Text>
+              </LogoutButton>
+            </Flex>
+          </Stack>
+        </Flex>
+      )}
+
+      <Flex
+        p="1rem"
+        flexDir="column"
+        w="100%"
+        alignItems={sidebarSize === "small" ? "center" : "flex-start"}
+        mb={5}
+        align="center"
+        display={sidebarSize === "small" ? "flex" : "none"}
+      >
+        <UserButton />
+      </Flex>
+    </Flex>
   );
 }

@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,18 +8,20 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-// ----------------------------------------------------------------
-// --------------------- DATABASE MODELS --------------------------
-
-enum UserRole {
-  ADMIN
-  USER
-}
-
-enum Status {
-  ACTIVE
-  INACTIVE
-  PENDING
+model Hoa {
+  id                  String  @id @default(cuid())
+  name                String
+  contactNumber       Int
+  startingFunds       Int
+  funds               Int
+  fixedDue            Int?
+  lotSizeDue          Int?
+  byLawsLink          String?
+  officerTerm         Int     @default(1)
+  overdueDelinquent   Int     @default(0)
+  violationDelinquent Int     @default(0)
+  cancelPeriod        Int     @default(0)
+  cancellationFee     Float   @default(0)
 }
 
 model User {
@@ -32,59 +31,135 @@ model User {
   image         String?
   emailVerified DateTime?
   password      String?
-  accounts      Account[]
-
   role          UserRole      @default(USER)
   status        Status        @default(PENDING)
+  accounts      Account[]
   info          PersonalInfo?
 }
 
 model PersonalInfo {
-  id          String    @id @default(cuid())
-  userId      String    @unique
+  id          String        @id @default(cuid())
+  userId      String        @unique
   firstName   String?
   middleName  String?
   lastName    String?
   phoneNumber String?
   birthDay    DateTime?
-
   address     String?
-
   bio         String?
-
   type        String?
-  position    String?   @default("Member")
-
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  relation    HomeRelation?
+  govtId      String?
+  position    String?       @default("Member")
+  committee   String?
+  createdAt   DateTime      @default(now())
+  imageUrl    String?
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Vehicle {
   id       String  @id @unique @default(cuid())
-  userId   String?  
-  plateNum String?
+  userId   String?
+  plateNum String
 }
 
 model Property {
-  id           String        @id @unique @default(cuid())
-  userId       String?    
-  occupantName String?   
+  id           String    @id @unique @default(cuid())
   address      String?
   lotNumber    String?
   lotSize      String?
-  latitude     Int?
-  longitude    Int?
-  documents    PropertyDocument[]
+  latitude     Float?
+  longitude    Float?
   purchaseDate DateTime?
 }
 
-model PropertyDocument {
-  id         String  @id @unique @default(cuid())
-  propertyId String
-  fileName   String?
-  imageUrl   String?
+model MonthlySoa {
+  id           String        @id @unique @default(cuid())
+  forMonth     Int
+  forYear      Int
+  addressId    String
+  transactions String[]
+  total        Float
+  paidAmount   Float
+  status       PaymentStatus @default(UNPAID)
+  balance      Float
+}
 
-  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+model SoaPayment {
+  id       String   @id @unique @default(cuid())
+  soaId    String
+  amount   Float
+  datePaid DateTime @default(now())
+  paidBy   String
+}
+
+model UserTransaction {
+  id          String        @id @unique @default(cuid())
+  soaId       String?
+  purpose     String
+  description String
+  amount      Int
+  createdAt   DateTime      @default(now())
+  status      PaymentStatus @default(UNPAID)
+  datePaid    DateTime?
+  paidBy      String?
+  addressId   String?
+}
+
+model HoaTransaction {
+  id          String             @id @unique @default(cuid())
+  type        HoaTransactionType
+  purpose     String
+  description String
+  amount      Int
+  dateIssued  DateTime
+  createdAt   DateTime           @default(now())
+  updateAt    DateTime           @updatedAt
+  submittedBy String
+}
+
+model BudgetPlan {
+  id                        String @id @unique @default(cuid())
+  title                     String
+  forYear                   Int
+  cybAssocDues              Int
+  cybToll                   Int
+  cybFacility               Int
+  cybConstruction           Int
+  cybCarSticker             Int
+  cybOtherRev               Int
+  ytdaAssocDues             Int?
+  ytdaToll                  Int?
+  ytdaFacility              Int?
+  ytdaConstruction          Int?
+  ytdaCarSticker            Int?
+  ytdaOtherRev              Int?
+  cybSalariesBenefits       Int
+  cybUtilities              Int
+  cybOfficeSupplies         Int
+  cybRepairMaintenance      Int
+  cybDonations              Int
+  cybFurnituresFixtures     Int
+  cybRepresentation         Int
+  cybLegalProfessionalFees  Int
+  cybAdministrativeCosts    Int
+  cybOtherExp               Int
+  ytdaSalariesBenefits      Int?
+  ytdaUtilities             Int?
+  ytdaOfficeSupplies        Int?
+  ytdaRepairMaintenance     Int?
+  ytdaDonations             Int?
+  ytdaFurnituresFixtures    Int?
+  ytdaRepresentation        Int?
+  ytdaLegalProfessionalFees Int?
+  ytdaAdministrativeCosts   Int?
+  ytdaOtherExp              Int?
+  cybTotalYearlyExp         Int
+  cybTotalYearlyRev         Int
+  cybTotalYearlySurplus     Int
+  ytdaTotalYearlyExp        Int?
+  ytdaTotalYearlyRev        Int?
+  ytdaTotalYearlySurplus    Int?
 }
 
 model Account {
@@ -93,15 +168,14 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -113,4 +187,453 @@ model ResetPasswordToken {
   expires DateTime
 
   @@unique([email, token])
+}
+
+model Post {
+  id          String       @id @unique @default(cuid())
+  userId      String
+  category    CategoryType
+  type        PostType
+  title       String
+  description String
+  status      Status       @default(PENDING)
+  createdAt   DateTime     @default(now())
+  mediaLink   String?
+  comments    Comment[]
+  likes       Like[]
+}
+
+model Like {
+  id        String   @id @unique @default(cuid())
+  userId    String
+  postId    String
+  createdAt DateTime @default(now())
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+}
+
+model Comment {
+  id        String   @id @unique @default(cuid())
+  userId    String
+  postId    String
+  text      String
+  createdAt DateTime @default(now())
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+}
+
+model Polls {
+  id          String       @id @unique @default(cuid())
+  userId      String
+  title       String
+  description String
+  category    CategoryType
+  endDate     DateTime
+  status      Status       @default(INACTIVE)
+  createdAt   DateTime     @default(now())
+  startDate   DateTime
+  questions   Question[]
+}
+
+model Question {
+  id      String   @id @unique @default(cuid())
+  pollId  String
+  text    String
+  options Option[]
+  polls   Polls    @relation(fields: [pollId], references: [id], onDelete: Cascade)
+}
+
+model Option {
+  id         String   @id @unique @default(cuid())
+  questionId String
+  text       String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+}
+
+model Response {
+  id         String   @id @unique @default(cuid())
+  userId     String
+  pollId     String
+  questionId String
+  optionId   String
+  createdAt  DateTime @default(now())
+}
+
+model Events {
+  id          String   @id @unique @default(cuid())
+  title       String
+  description String
+  date        DateTime
+  venue       String
+  userId      String
+  createdAt   DateTime @default(now())
+}
+
+model ViolationType {
+  id               String @id @unique @default(cuid())
+  title            String
+  description      String
+  firstOffenseFee  Float
+  secondOffenseFee Float
+  thirdOffenseFee  Float
+}
+
+model Violation {
+  id              String       @id @unique @default(cuid())
+  violationDate   DateTime
+  type            String
+  description     String
+  personsInvolved String[]
+  documents       String[]
+  status          ReportStatus @default(FOR_REVIEW)
+  priority        Priority?
+  officerAssigned String?
+  createdAt       DateTime     @default(now())
+  submittedBy     String
+  number          Int          @default(autoincrement())
+  progress        String       @default("Step 2 & 3: Review by Committe & Assignment")
+  step            Int          @default(2)
+  committeeReview String?
+  letterSent      Boolean      @default(false)
+  finalReview     String?
+  reasonToClose   String?
+  updatedAt       DateTime     @updatedAt
+  commReviewDate  DateTime?
+  finalReviewDate DateTime?
+  feeToIncur      String?
+}
+
+model ViolationOfficerActivity {
+  id            String    @id @unique @default(cuid())
+  violationId   String
+  title         String
+  deadline      DateTime
+  dateCompleted DateTime?
+  isDone        Boolean   @default(false)
+}
+
+model ViolationProgress {
+  id            String   @id @unique @default(cuid())
+  activity      String
+  title         String
+  description   String
+  document      String?
+  dateSubmitted DateTime @default(now())
+}
+
+model Notification {
+  id          String   @id @unique @default(cuid())
+  type        String
+  recipient   String
+  title       String
+  description String
+  isRead      Boolean  @default(false)
+  linkToView  String
+  createdAt   DateTime @default(now())
+  isArchived  Boolean  @default(false)
+}
+
+model Letter {
+  id          String           @id @unique @default(cuid())
+  type        LetterNoticeType
+  recipient   String
+  title       String
+  description String
+  meetDate    DateTime?
+  venue       String?
+  sender      String
+  createdAt   DateTime         @default(now())
+  idToLink    String
+}
+
+model Notice {
+  id          String           @id @unique @default(cuid())
+  type        LetterNoticeType
+  recipient   String
+  title       String
+  description String
+  sender      String
+  createdAt   DateTime         @default(now())
+  idToLink    String
+}
+
+model DisputeType {
+  id          String @id @unique @default(cuid())
+  description String
+  title       String
+}
+
+model Dispute {
+  id               String       @id @unique @default(cuid())
+  disputeDate      DateTime
+  type             String
+  description      String
+  personComplained String
+  status           ReportStatus @default(FOR_REVIEW)
+  priority         Priority?
+  officerAssigned  String?
+  createdAt        DateTime     @default(now())
+  submittedBy      String
+  number           Int          @default(autoincrement())
+  progress         String       @default("Step 2: Review by Grievance & Adjudication Committee")
+  step             Int          @default(2)
+  committeeReview  String?
+  letterSent       Boolean      @default(false)
+  finalReview      String?
+  reasonToClose    String?
+  updatedAt        DateTime     @updatedAt
+  commReviewDate   DateTime?
+  documents        String[]
+  feeToIncur       String?
+  finalReviewDate  DateTime?
+  violationId      String?
+}
+
+model DisputeOfficerActivity {
+  id            String    @id @unique @default(cuid())
+  disputeId     String
+  title         String
+  deadline      DateTime
+  isDone        Boolean   @default(false)
+  dateCompleted DateTime?
+}
+
+model DisputeProgress {
+  id            String   @id @unique @default(cuid())
+  activity      String
+  title         String
+  description   String
+  document      String?
+  dateSubmitted DateTime @default(now())
+}
+
+model MaintenanceType {
+  id          String @id @unique @default(cuid())
+  description String
+  title       String
+}
+
+model MaintenanceSchedule {
+  id        String                 @id @default(cuid())
+  serviceId String
+  days      String
+  startTime String
+  endTime   String
+  service   RegularMaintainService @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+}
+
+model RegularMaintainService {
+  id         String                @id @default(cuid())
+  title      String
+  facilityId String
+  schedules  MaintenanceSchedule[]
+}
+
+model MaintenanceRequest {
+  id              String    @id @unique @default(cuid())
+  number          Int       @default(autoincrement())
+  type            String
+  location        String
+  submittedBy     String
+  createdAt       DateTime  @default(now())
+  documents       String[]
+  description     String
+  status          String    @default("For Review")
+  priority        Priority?
+  officerAssigned String?
+  step            Int       @default(2)
+  progress        String    @default("Step 2 & 3: Review by Committe & Assignment")
+  committeeReview String?
+  commReviewDate  DateTime?
+  letterSent      Boolean   @default(false)
+  finalReview     String?
+  finalReviewDate DateTime?
+  reasonToClose   String?
+  feeToIncur      String?
+  updatedAt       DateTime  @updatedAt
+}
+
+model MaintenanceNotice {
+  id          String   @id @unique @default(cuid())
+  location    String
+  startDate   DateTime
+  startTime   String
+  endDate     DateTime
+  endTime     String
+  idToLink    String
+  createdAt   DateTime @default(now())
+  sender      String
+  description String
+  subject     String
+}
+
+model MaintenanceOfficerActivity {
+  id            String    @id @unique @default(cuid())
+  maintainReqId String
+  title         String
+  deadline      DateTime
+  isDone        Boolean   @default(false)
+  dateCompleted DateTime?
+}
+
+model MaintenanceProgress {
+  id            String   @id @unique @default(cuid())
+  activity      String
+  title         String
+  description   String
+  document      String?
+  dateSubmitted DateTime @default(now())
+}
+
+model ExternalMaintainers {
+  id             String   @id @unique @default(cuid())
+  name           String
+  service        String
+  contactNumbers String[]
+  logoImg        String?
+  updatedAt      DateTime @updatedAt
+}
+
+model Facility {
+  id                  String                @id @unique @default(cuid())
+  name                String
+  hourlyRate          Int
+  description         String
+  address             String
+  mediaLink           String?
+  FacilityReservation FacilityReservation[]
+}
+
+model FacilityReservation {
+  id             String   @id @unique @default(cuid())
+  facilityId     String
+  userId         String
+  startTime      DateTime
+  endTime        DateTime
+  numHours       Int
+  reservationFee Int
+  isBilled       Boolean  @default(false)
+  Facility       Facility @relation(fields: [facilityId], references: [id], onDelete: Cascade)
+}
+
+model Candidates {
+  id              String   @id @unique @default(cuid())
+  userId          String
+  electionId      String
+  applicationLink String?
+  status          String   @default("PENDING")
+  reasonToReject  String?
+  updatedAt       DateTime @default(now()) @updatedAt
+  educBackground  String[]
+  fullName        String?
+  homeownerSince  Float?
+  platforms       String[]
+  skills          String[]
+  workExperience  String[]
+}
+
+model ElectionGuidelines {
+  id                        String    @id @unique @default(cuid())
+  boardResolution           String[]
+  qualifications            String[]
+  candidacyFormLink         String?
+  updatedResolutionDate     DateTime?
+  updatedResolutionBy       String?
+  updatedQualificationsDate DateTime?
+  updatedQualificationsBy   String?
+  updatedFormDate           DateTime?
+  updatedFormBy             String?
+  boardResolutionDate       DateTime?
+  approvedResolutionDate    DateTime?
+}
+
+model ElectionSettings {
+  id                String   @id @unique @default(cuid())
+  requiredVotes     Int
+  totalBoardMembers Int
+  status            String   @default("ON-GOING")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  endApplyDate      DateTime
+  endElectDate      DateTime
+  startApplyDate    DateTime
+  startElectDate    DateTime
+  isExtended        Boolean  @default(false)
+  termOfOffice      String?
+  title             String?
+}
+
+model VoteResponse {
+  id          String   @id @unique @default(cuid())
+  userId      String
+  electionId  String
+  candidateId String
+  createdAt   DateTime @default(now())
+}
+
+enum ReportStatus {
+  FOR_REVIEW                @map("For Review")
+  FOR_ASSIGNMENT            @map("For Officer Assignment")
+  PENDING_LETTER_TO_BE_SENT @map("Pending Letter To Be Sent")
+  NEGOTIATING               @map("Negotiating")
+  CLOSED                    @map("Closed")
+  FOR_FINAL_REVIEW          @map("For Final Review")
+}
+
+enum Priority {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum LetterNoticeType {
+  DISPUTE
+  VIOLATION
+}
+
+enum CategoryType {
+  MEETING
+  ELECTION
+  INQUIRY
+  EVENT
+  FOODANDDRINK
+  CLOTHING
+  HOUSEHOLDITEMS
+  HOMESERVICES
+  OTHER
+}
+
+enum PostType {
+  DISCUSSION
+  BUSINESS
+  OFFICER
+}
+
+enum UserRole {
+  ADMIN
+  USER
+  SUPERUSER
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+  PENDING
+  DELINQUENT
+}
+
+enum HomeRelation {
+  PARENT
+  CHILD
+  HELPER
+}
+
+enum PaymentStatus {
+  PAID
+  UNPAID
+  OVERDUE
+  UNSETTLED
+}
+
+enum HoaTransactionType {
+  REVENUE
+  EXPENSE
 }

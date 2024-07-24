@@ -1,32 +1,56 @@
-"use client";
-
 import { Sidebar } from "@/components/system/Sidebar";
-import { Flex } from "@chakra-ui/react";
-import { useCurrentUser } from "@/hooks/use-current-user";
-import { usePathname, useRouter } from "next/navigation";
-import { UserRole } from "@prisma/client";
+import { Box, Flex } from "@chakra-ui/react";
+import { Status, UserRole } from "@prisma/client";
 import InfoGate from "./_components/info-gate";
+import ApprovalGate from "./_components/approval-gate";
+import { getNotificationsByUserId } from "@/server/data/notification";
+import { getHoaInfo } from "@/server/data/hoa-info";
+import SysSetupGate from "./_components/system-setup-gate";
+import { currentUser } from "@/lib/auth";
+import AdminGate from "./_components/admin-gate";
 
-const UserLayout = ({ children }: { children: React.ReactNode }) => {
-  const user = useCurrentUser();
-  const pathname = usePathname();
-  const router = useRouter();
+const UserLayout = async ({ children }: { children: React.ReactNode }) => {
+  const user = await currentUser();
 
-  if (user?.role === UserRole.ADMIN) {
-    router.replace("/admin");
+  if (!user) {
+    return null;
   }
 
-  return user?.role !== UserRole.ADMIN &&
-    !user?.info &&
-    pathname !== "/user/settings" ? (
+  const existingHoaInfo = getHoaInfo();
+
+  const isAdmin = user?.role === UserRole.ADMIN;
+  const existingUserInfo = user?.info;
+  const uploadedGovId = user?.info.govtId;
+  const isApproved = user?.status != Status.PENDING;
+
+  if (isAdmin) {
+    return <AdminGate />;
+  }
+
+  const notifications = await getNotificationsByUserId(user?.id);
+
+  // check if user/settings
+  return !existingHoaInfo ? (
+    <SysSetupGate />
+  ) : !isAdmin && !existingUserInfo && !uploadedGovId ? (
     <InfoGate />
+  ) : !isAdmin && existingUserInfo && uploadedGovId && !isApproved ? (
+    <ApprovalGate />
   ) : (
-    <Flex>
-      <Sidebar />
-      <Flex flexDir={"column"} w="100%" className="p-10">
-        {children}
+    <>
+      <Flex>
+        <Sidebar
+          notifications={
+            notifications
+              ?.filter((notif) => notif.isArchived === false)
+              .sort((a: any, b: any) => b.createdAt - a.createdAt) || null
+          }
+        />
+        <Box className="p-10" w="100%">
+          {children}
+        </Box>
       </Flex>
-    </Flex>
+    </>
   );
 };
 export default UserLayout;

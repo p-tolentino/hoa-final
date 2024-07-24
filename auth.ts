@@ -50,6 +50,7 @@ export const {
         session.user.email = token.email;
         session.user.role = token.role;
         session.user.info = token.info;
+        session.user.status = token.status;
       }
 
       return session;
@@ -72,6 +73,7 @@ export const {
       token.email = existingUser.email;
       token.role = existingUser.role;
       token.info = existingInfo;
+      token.status = existingUser.status;
 
       return token;
     },

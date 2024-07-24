@@ -1,67 +1,76 @@
-import { Flex } from "@chakra-ui/react";
+import { SimpleGrid } from '@chakra-ui/react'
+import ModuleMenuCard from '@/components/system/ModuleMenuCard'
+import { currentUser } from '@/lib/auth'
+import { Heading } from '@/components/ui/heading'
 
-import { Card } from "@/components/ui/card";
+const Membership = async () => {
+  const user = await currentUser()
 
-const Membership = () => {
-  const userManagementMenuCard = [
+  // Page Title and Description
+  const pageTitle = 'Membership'
+  const pageDescription = `Navigate the ${pageTitle} module.`
+
+  const userManagement = [
     {
-      category: "User Management",
-      category_buttons: ["Homeowners Directory", "Admin Officers Directory"],
-      category_hrefs: [
-        "/admin/membership/user-management/homeowners-directory",
-        "/admin/membership/user-management/admin-officers-directory",
-      ],
-      category_descriptions: [
-        "1Lorem ipsum dolor, sit amet consectetur adipisicing elit. Modi, quo veritatis repudiandae amet deserunt pariatur?",
-        "2Lorem ipsum dolor, sit amet consectetur adipisicing elit. Modi, quo veritatis repudiandae amet deserunt pariatur?",
-      ],
-    },
-  ];
-
-  const propertyManagementMenuCard = [
-    {
-      category: "Property Management",
+      category: 'User Management',
+      // category_users: "Admins, Officers, and Board of Directors",
       category_buttons: [
-        "Browse House Lots (Maps)",
-        "Property Information Form",
-      ],
-      category_hrefs: [
-        "/admin/membership/property-management/browse-house-lots",
-        "/admin/membership/property-management/property-information-form",
-      ],
-      category_descriptions: [
-        "1Lorem ipsum dolor, sit amet consectetur adipisicing elit. Modi, quo veritatis repudiandae amet deserunt pariatur?",
-        "2Lorem ipsum dolor, sit amet consectetur adipisicing elit. Modi, quo veritatis repudiandae amet deserunt pariatur?",
-      ],
-    },
-  ];
+        {
+          text: 'Homeowners Directory',
+          href: `/admin/membership/homeowner-directory`,
+          description:
+            'Manage all registered system users in the Homeowners’ Association.',
+          officerRequired: true
+        },
+        {
+          text: 'Admin & Board of Directors Directory',
+          href: `/admin/membership/admin-directory`,
+          description:
+            'Access the consolidated list of system admins and officers, along with their respective information.',
+          officerRequired: false
+        }
+      ]
+    }
+  ]
 
-  const userRegistrationMenuCard = [
+  const propertyManagement = [
     {
-      category: "User Registration",
-      category_buttons: ["Membership Form"],
-      category_hrefs: ["/admin/membership/user-registration/membership-form"],
-      category_descriptions: [
-        "1Lorem ipsum dolor, sit amet consectetur adipisicing elit. Modi, quo veritatis repudiandae amet deserunt pariatur?",
-      ],
-    },
-  ];
-  {
-    /* <Flex gap="2.5rem">
-        {userManagementMenuCard.map((categoryData, index) => (
-          <ModuleMenuCard key={index} data={categoryData}></ModuleMenuCard>
-        ))}
+      category: 'Property Management',
+      // category_users: 'Admins, Officers, and Board of Directors',
+      category_buttons: [
+        {
+          text: 'HOA Properties',
+          href: `/admin/membership/properties/map`,
+          description:
+            "Browse properties owned by the Homeowners' Association and access their information.",
+          officerRequired: false
+        }
+      ]
+    }
+  ]
 
-        {propertyManagementMenuCard.map((categoryData, index) => (
-          <ModuleMenuCard key={index} data={categoryData}></ModuleMenuCard>
-        ))}
+  return (
+    <>
+      <Heading title={pageTitle} description={pageDescription} />
 
-        {userRegistrationMenuCard.map((categoryData, index) => (
-          <ModuleMenuCard key={index} data={categoryData}></ModuleMenuCard>
+      <SimpleGrid spacing={6} columns={{ md: 1, lg: 3 }} w='max-content'>
+        {/* User Management */}
+        {userManagement.map(categoryData => (
+          <ModuleMenuCard
+            key={categoryData.category}
+            data={categoryData}
+          ></ModuleMenuCard>
         ))}
-      </Flex> */
-  }
-  return <>Todo: Membership Dashboard Module Cards</>;
-};
+        {/* Property Management */}
+        {propertyManagement.map(categoryData => (
+          <ModuleMenuCard
+            key={categoryData.category}
+            data={categoryData}
+          ></ModuleMenuCard>
+        ))}
+      </SimpleGrid>
+    </>
+  )
+}
 
-export default Membership;
+export default Membership

@@ -4,7 +4,7 @@ import LoginForm from "./_components/login-form";
 
 export default function SignIn() {
   return (
-    <Box>
+    <Box mt="4%">
       <Flex justify="space-between">
         <Box w="50vw" h="100vh" verticalAlign="left">
           <LoginForm />

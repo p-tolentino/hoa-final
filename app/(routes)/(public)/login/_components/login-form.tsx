@@ -78,7 +78,7 @@ const LoginForm = () => {
         >
           <Box mb="10px">
             <Heading size="lg" textAlign="left" fontFamily="font.heading">
-              Welcome back!
+              Welcome!
             </Heading>
             <Text
               size="sm"
@@ -87,7 +87,7 @@ const LoginForm = () => {
               color="gray"
               mb="5"
             >
-              Log in with your account
+              Sign in using Email Address
             </Text>
           </Box>
           <Form {...form}>
@@ -132,7 +132,9 @@ const LoginForm = () => {
                         asChild
                         className="px-0 font-normal"
                       >
-                        <Link href="/reset">Forgot password?</Link>
+                        <Link href="/reset" className="text-xs">
+                          Forgot password?
+                        </Link>
                       </Button>
                       <FormMessage />
                     </FormItem>
@@ -146,7 +148,7 @@ const LoginForm = () => {
                 type="submit"
                 disabled={isPending}
               >
-                Login
+                Sign in
               </Button>
             </form>
           </Form>
@@ -162,10 +164,10 @@ const LoginForm = () => {
           </Flex>
           <Social />
           <Flex justify="center" alignItems="center">
-            <span className="pt-5 text-sm">
+            <span className="pt-5 text-xs">
               Don't have an account yet?
               <Link href="/register">
-                <Button className="sm" variant="link">
+                <Button className="sm text-xs" variant="link">
                   Sign up now →
                 </Button>
               </Link>

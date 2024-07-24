@@ -20,6 +20,7 @@ export const Social = () => {
     <div className="flex items-center w-full gap-x=2">
       <Button
         size="md"
+        fontSize="sm"
         className="w-full"
         variant="outline"
         onClick={() => onClick("google")}

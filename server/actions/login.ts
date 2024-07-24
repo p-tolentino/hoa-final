@@ -7,6 +7,9 @@ import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 
 import { AuthError } from "next-auth";
 import { getUserByEmail } from "@/server/data/user";
+import { UserRole } from "@prisma/client";
+
+import { checkDelinquency } from "./user-info";
 
 export const login = async (
   values: z.infer<typeof LoginSchema>,
@@ -45,11 +48,20 @@ export const login = async (
     return { error: "Email does not exist!" };
   }
 
+  if(existingUser){
+    await checkDelinquency(existingUser)
+  }
+
+  const loginRedirect =
+    existingUser.role !== UserRole.ADMIN
+      ? `/user/profile`
+      : `/admin/membership`;
+
   try {
     await signIn("credentials", {
       email,
       password,
-      redirectTo: callbackUrl || DEFAULT_LOGIN_REDIRECT,
+      redirectTo: loginRedirect || DEFAULT_LOGIN_REDIRECT,
     });
   } catch (error) {
     if (error instanceof AuthError) {

@@ -1,3 +1,5 @@
+"use server";
+
 import { db } from "@/lib/db";
 
 export const getUserByEmail = async (email: string) => {
@@ -25,6 +27,33 @@ export const getUserById = async (id: string) => {
     });
 
     return user;
+  } catch {
+    return null;
+  }
+};
+
+export const getAllUsers = async () => {
+  try {
+    const users = await db.user.findMany({
+      include: {
+        info: true,
+      },
+    });
+
+    return users;
+  } catch {
+    return null;
+  }
+};
+
+
+export const getActiveUsers = async () => {
+  try {
+    const account = await db.user.findMany({
+      where: { role: "USER", status: 'ACTIVE' },
+    });
+
+    return account;
   } catch {
     return null;
   }

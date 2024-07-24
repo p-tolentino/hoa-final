@@ -19,6 +19,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FormError } from "@/components/form-error";
@@ -28,8 +37,13 @@ import { register } from "@/server/actions/register";
 import { Flex, Box, Stack, Heading, Text } from "@chakra-ui/react";
 import { Social } from "@/components/auth/social";
 import { Separator } from "@/components/ui/separator";
+import { HomeRelation, Property } from "@prisma/client";
 
-export const RegisterForm = () => {
+export const RegisterForm = ({
+  properties,
+}: {
+  properties: Property[] | null | undefined;
+}) => {
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
   const [isPending, startTransition] = useTransition();
@@ -40,6 +54,13 @@ export const RegisterForm = () => {
       email: "",
       password: "",
       confirmPassword: "",
+      firstName: "",
+      lastName: "",
+      birthDay: "",
+      phoneNumber: "",
+      type: undefined,
+      address: "",
+      relation: "",
     },
   });
 
@@ -96,6 +117,183 @@ export const RegisterForm = () => {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <div className="space-y-4">
+                <div className="flex w-full space-x-4">
+                  <FormField
+                    control={form.control}
+                    name="firstName"
+                    render={({ field }) => (
+                      <FormItem className="w-full">
+                        <FormLabel> First Name </FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            placeholder="John"
+                            disabled={isPending}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="lastName"
+                    render={({ field }) => (
+                      <FormItem className="w-full">
+                        <FormLabel> Last Name </FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            placeholder="Doe"
+                            disabled={isPending}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="flex w-full space-x-4">
+                  <FormField
+                    control={form.control}
+                    name="birthDay"
+                    render={({ field }) => (
+                      <FormItem className="w-full">
+                        <FormLabel> Date of Birth </FormLabel>
+                        <FormControl>
+                          <Input type="date" disabled={isPending} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="phoneNumber"
+                    render={({ field }) => (
+                      <FormItem className="w-full">
+                        <FormLabel className="font-semibold text-black">
+                          Contact Number
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            disabled={isPending}
+                            placeholder="09XX-XXX-XXXX"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <FormField
+                  control={form.control}
+                  name="address"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="font-semibold text-black col-span-2">
+                        Home Address
+                      </FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        disabled={isPending}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue
+                              placeholder={"Select your home address"}
+                            />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {properties?.map((property) => {
+                            return (
+                              <SelectItem
+                                key={property.id}
+                                value={property.id || ""}
+                              >
+                                {property.address}
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="flex w-full space-x-4">
+                  <FormField
+                    control={form.control}
+                    name="type"
+                    render={({ field }) => (
+                      <FormItem className="space-y-3 w-full">
+                        <FormLabel className="font-semibold text-black">
+                          Resident Type
+                        </FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                          disabled={isPending}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue
+                                placeholder={"Select your resident type"}
+                              />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="Homeowner">Homeowner</SelectItem>
+                            <SelectItem value="Tenant">Tenant</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="relation"
+                    render={({ field }) => (
+                      <FormItem className="w-full">
+                        <FormLabel className="font-semibold text-black">
+                          Relation
+                        </FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                          disabled={isPending}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue
+                                placeholder={"Select your home relation"}
+                              />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value={HomeRelation.PARENT}>
+                              Parent
+                            </SelectItem>
+                            <SelectItem value={HomeRelation.CHILD}>
+                              Child
+                            </SelectItem>
+                            <SelectItem value={HomeRelation.HELPER}>
+                              Helper
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
                 <FormField
                   control={form.control}
                   name="email"
@@ -175,11 +373,11 @@ export const RegisterForm = () => {
           </Flex>
           <Social />
           <Flex justify="center" alignItems="center">
-            <span className="pt-5 text-sm">
+            <span className="pt-5 text-xs">
               Already have an account?
               <Link href="/login">
-                <Button className="sm" variant="link">
-                  Login →
+                <Button className="sm text-xs" variant="link">
+                  Sign in →
                 </Button>
               </Link>
             </span>
