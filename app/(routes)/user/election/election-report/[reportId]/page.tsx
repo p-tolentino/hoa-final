@@ -1,45 +1,45 @@
-import { db } from '@/lib/db'
-import ElectionReport from './_components/reports-page'
-import { getApprovedCandidatesByElection } from '@/server/data/candidates'
-import { getElection } from '@/server/data/election-settings'
-import { getAllVotes } from '@/server/data/election-vote'
-import { currentUser } from '@/lib/auth'
-import { getHoaInfo } from '@/server/data/hoa-info'
-import { getActiveUsers } from '@/server/data/user'
+import { db } from "@/lib/db";
+import ElectionReport from "./_components/reports-page";
+import { getApprovedCandidatesByElection } from "@/server/data/candidates";
+import { getElection } from "@/server/data/election-settings";
+import { getAllVotes } from "@/server/data/election-vote";
+import { currentUser } from "@/lib/auth";
+import { getHoaInfo } from "@/server/data/hoa-info";
+import { getActiveUsers } from "@/server/data/user";
 
-export const ElectionReportPage = async ({
-  params
+const ElectionReportPage = async ({
+  params,
 }: {
-  params: { reportId: string }
+  params: { reportId: string };
 }) => {
-  const user = await currentUser()
+  const user = await currentUser();
   if (!user) {
-    return null
+    return null;
   }
 
-  const hoaInfo = await getHoaInfo()
+  const hoaInfo = await getHoaInfo();
   if (!hoaInfo) {
-    return null
+    return null;
   }
 
-  const activeUsers = await getActiveUsers()
+  const activeUsers = await getActiveUsers();
   if (!activeUsers) {
-    return null
+    return null;
   }
 
-  const candidates = await getApprovedCandidatesByElection(params.reportId)
+  const candidates = await getApprovedCandidatesByElection(params.reportId);
   if (!candidates) {
-    return null
+    return null;
   }
 
-  const election = await getElection(params.reportId)
+  const election = await getElection(params.reportId);
   if (!election) {
-    return null
+    return null;
   }
 
-  const votes = await getAllVotes(params.reportId)
+  const votes = await getAllVotes(params.reportId);
   if (!votes) {
-    return null
+    return null;
   }
 
   return (
@@ -52,7 +52,7 @@ export const ElectionReportPage = async ({
         hoaInfo={hoaInfo}
       />
     </div>
-  )
-}
+  );
+};
 
-export default ElectionReportPage
+export default ElectionReportPage;

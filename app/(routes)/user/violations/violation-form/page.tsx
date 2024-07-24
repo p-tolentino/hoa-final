@@ -3,7 +3,7 @@ import ReportForm from "./_components/report-form";
 import { getAllViolationTypes } from "@/server/data/violation-type";
 import { getAllInfo } from "@/server/data/user-info";
 
-export const ViolationForm = async () => {
+const ViolationForm = async () => {
   const user = await currentUser();
 
   if (!user) {

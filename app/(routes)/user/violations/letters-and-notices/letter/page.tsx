@@ -33,12 +33,9 @@ import { useReactToPrint } from "react-to-print";
 import { FaFilePdf } from "react-icons/fa";
 import NextImage from "next/image";
 import SystemLogo from "@/public/HOAs.is-logo.png";
+import { getHoaInfo } from "@/server/data/hoa-info";
 
-interface ViolationLetterProps {
-  hoaInfo: Hoa;
-}
-
-const ViolationLetter: React.FC<ViolationLetterProps> = ({ hoaInfo }) => {
+const ViolationLetter = () => {
   const searchParams = useSearchParams();
 
   const [letter, setLetter] = useState<Letter | null>();
@@ -46,6 +43,7 @@ const ViolationLetter: React.FC<ViolationLetterProps> = ({ hoaInfo }) => {
   const [sender, setSender] = useState<PersonalInfo | null>();
   const [violation, setViolation] = useState<Violation | null>();
   const [violationType, setViolationType] = useState<ViolationType | null>();
+  const [hoaInfo, setHoaInfo] = useState<Hoa | null>();
 
   const [isPending, startTransition] = useTransition();
 
@@ -56,6 +54,12 @@ const ViolationLetter: React.FC<ViolationLetterProps> = ({ hoaInfo }) => {
   useEffect(() => {
     startTransition(() => {
       const fetchData = async () => {
+        await getHoaInfo().then((data) => {
+          if (data) {
+            setHoaInfo(data);
+          }
+        });
+
         if (letterId) {
           await getLetterById(letterId).then((data) => {
             if (data) {

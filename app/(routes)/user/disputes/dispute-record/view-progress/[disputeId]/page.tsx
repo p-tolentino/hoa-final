@@ -6,7 +6,7 @@ import {
   getDisputeOfficerActivitiesById,
 } from "@/server/data/dispute";
 
-export const DisputeProgressPage = async ({
+const ViewProgressPage = async ({
   params,
 }: {
   params: { disputeId: string };
@@ -91,4 +91,4 @@ export const DisputeProgressPage = async ({
   );
 };
 
-export default DisputeProgressPage;
+export default ViewProgressPage;

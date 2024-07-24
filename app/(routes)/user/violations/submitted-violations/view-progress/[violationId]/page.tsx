@@ -10,7 +10,7 @@ type ViolationRecords = {
   [userId: string]: number;
 };
 
-export const ViolationProgressPage = async ({
+const ViolationProgressPage = async ({
   params,
 }: {
   params: { violationId: string };

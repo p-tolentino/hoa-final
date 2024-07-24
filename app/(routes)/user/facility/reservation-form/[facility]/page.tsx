@@ -2,7 +2,7 @@ import { db } from "@/lib/db";
 import ReservationForm from "./_components/reservationForm";
 import { getHoaInfo } from "@/server/data/hoa-info";
 
-export const ReservationPage = async ({
+const ReservationPage = async ({
   params,
 }: {
   params: { facility: string };

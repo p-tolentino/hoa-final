@@ -6,7 +6,7 @@ import {
   getDisputeOfficerActivitiesById,
 } from "@/server/data/dispute";
 
-export const DisputeProgressPage = async ({
+const DisputeProgressPage = async ({
   params,
 }: {
   params: { disputeId: string };

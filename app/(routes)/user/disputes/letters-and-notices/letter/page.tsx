@@ -32,12 +32,9 @@ import { useReactToPrint } from "react-to-print";
 import { FaFilePdf } from "react-icons/fa";
 import NextImage from "next/image";
 import SystemLogo from "@/public/HOAs.is-logo.png";
+import { getHoaInfo } from "@/server/data/hoa-info";
 
-interface DisputeLetterProps {
-  hoaInfo: Hoa;
-}
-
-const DisputeLetter: React.FC<DisputeLetterProps> = ({ hoaInfo }) => {
+const DisputeLetter = () => {
   const searchParams = useSearchParams();
   const [letter, setLetter] = useState<Letter | null>();
   const [recipient, setRecipient] = useState<PersonalInfo | null>();
@@ -45,6 +42,7 @@ const DisputeLetter: React.FC<DisputeLetterProps> = ({ hoaInfo }) => {
   const [dispute, setDispute] = useState<Dispute | null>();
   const [disputeType, setDisputeType] = useState<DisputeType | null>();
   const [userInvolved, setUserInvolved] = useState<PersonalInfo | null>();
+  const [hoaInfo, setHoaInfo] = useState<Hoa | null>();
 
   const [isPending, startTransition] = useTransition();
 
@@ -54,6 +52,12 @@ const DisputeLetter: React.FC<DisputeLetterProps> = ({ hoaInfo }) => {
   useEffect(() => {
     startTransition(() => {
       const fetchData = async () => {
+        await getHoaInfo().then((data) => {
+          if (data) {
+            setHoaInfo(data);
+          }
+        });
+
         if (letterId) {
           await getLetterById(letterId).then((data) => {
             if (data) {

@@ -32,12 +32,9 @@ import { useReactToPrint } from "react-to-print";
 import { FaFilePdf } from "react-icons/fa";
 import NextImage from "next/image";
 import SystemLogo from "@/public/HOAs.is-logo.png";
+import { getHoaInfo } from "@/server/data/hoa-info";
 
-interface ViolationNoticeProps {
-  hoaInfo: Hoa;
-}
-
-const ViolationNotice: React.FC<ViolationNoticeProps> = ({ hoaInfo }) => {
+const ViolationNotice = () => {
   const searchParams = useSearchParams();
 
   const [notice, setNotice] = useState<Notice | null>();
@@ -45,6 +42,7 @@ const ViolationNotice: React.FC<ViolationNoticeProps> = ({ hoaInfo }) => {
   const [sender, setSender] = useState<PersonalInfo | null>();
   const [violation, setViolation] = useState<Violation | null>();
   const [violationType, setViolationType] = useState<ViolationType | null>();
+  const [hoaInfo, setHoaInfo] = useState<Hoa | null>();
 
   const [isPending, startTransition] = useTransition();
 
@@ -55,6 +53,11 @@ const ViolationNotice: React.FC<ViolationNoticeProps> = ({ hoaInfo }) => {
   useEffect(() => {
     startTransition(() => {
       const fetchData = async () => {
+        await getHoaInfo().then((data) => {
+          if (data) {
+            setHoaInfo(data);
+          }
+        });
         if (noticeId) {
           await getNoticeById(noticeId).then((data) => {
             if (data) {

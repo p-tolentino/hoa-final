@@ -1,76 +1,76 @@
-import { db } from '@/lib/db'
-import ProgressDetails from './_components/view-progress'
-import { getAllInfo } from '@/server/data/user-info'
+import { db } from "@/lib/db";
+import ProgressDetails from "./_components/view-progress";
+import { getAllInfo } from "@/server/data/user-info";
 import {
   getAllProgressReports,
-  getMaintenanceOfficerActivitiesById
-} from '@/server/data/maintenance-request'
-import { getAllProperties } from '@/server/data/property'
-import { getFacilities } from '@/server/data/facilities'
+  getMaintenanceOfficerActivitiesById,
+} from "@/server/data/maintenance-request";
+import { getAllProperties } from "@/server/data/property";
+import { getFacilities } from "@/server/data/facilities";
 
-export const MaintenanceProgressPage = async ({
-  params
+const MaintenanceProgressPage = async ({
+  params,
 }: {
-  params: { maintenanceId: string }
+  params: { maintenanceId: string };
 }) => {
   const maintenance = await db.maintenanceRequest.findUnique({
     where: {
-      id: params.maintenanceId
-    }
-  })
+      id: params.maintenanceId,
+    },
+  });
 
   if (!maintenance) {
-    return null
+    return null;
   }
 
   const maintenanceType = await db.maintenanceType.findFirst({
     where: {
-      id: maintenance?.type
-    }
-  })
+      id: maintenance?.type,
+    },
+  });
 
-  let officerAssigned
+  let officerAssigned;
 
   if (maintenance?.officerAssigned) {
     officerAssigned = await db.personalInfo.findFirst({
       where: {
-        userId: maintenance?.officerAssigned
-      }
-    })
+        userId: maintenance?.officerAssigned,
+      },
+    });
   }
 
   const submittedBy = await db.personalInfo.findFirst({
     where: {
-      userId: maintenance?.submittedBy
-    }
-  })
+      userId: maintenance?.submittedBy,
+    },
+  });
 
-  const infos = await getAllInfo()
+  const infos = await getAllInfo();
 
   if (!infos) {
-    return null
+    return null;
   }
 
   const committeeMembers = infos.filter(
-    info => info.committee === 'Environment & Sanitation Committee'
-  )
+    (info) => info.committee === "Environment & Sanitation Committee"
+  );
 
   const officerActivities = await getMaintenanceOfficerActivitiesById(
     maintenance?.id
-  )
+  );
 
-  const progressReports = await getAllProgressReports()
+  const progressReports = await getAllProgressReports();
 
-  const facilities = await getFacilities()
+  const facilities = await getFacilities();
 
   if (!facilities) {
-    return null
+    return null;
   }
 
-  const properties = await getAllProperties()
+  const properties = await getAllProperties();
 
   if (!properties) {
-    return null
+    return null;
   }
 
   // const allMaintenance = await db.maintenance.findMany()
@@ -98,15 +98,15 @@ export const MaintenanceProgressPage = async ({
     progressReports: progressReports,
     userInfos: infos,
     location:
-      maintenance.type === 'facilityMaintenance'
-        ? facilities.find(loc => loc.id === maintenance.location)!!.name
-        : properties.find(loc => loc.id === maintenance.location)!!.address
-  }
+      maintenance.type === "facilityMaintenance"
+        ? facilities.find((loc) => loc.id === maintenance.location)!!.name
+        : properties.find((loc) => loc.id === maintenance.location)!!.address,
+  };
   return (
     <div>
       <ProgressDetails reportDetails={reportDetails} />
     </div>
-  )
-}
+  );
+};
 
-export default MaintenanceProgressPage
+export default MaintenanceProgressPage;

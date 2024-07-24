@@ -3,7 +3,7 @@ import { getAllBudgetPlans } from "@/server/data/budget-plan";
 import BudgetPlanning from "./_components/budget-plans-table";
 import { BudgetPlanColumn } from "./_components/columns";
 
-export const BudgetPlanPage = async () => {
+const BudgetPlanPage = async () => {
   const user = await currentUser();
 
   if (!user) {
